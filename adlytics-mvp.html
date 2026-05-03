@@ -1,0 +1,2136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Adlytics"/>
+<meta name="theme-color" content="#0a0a0f"/>
+<title>Adlytics — Ad Performance Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #16161f;
+    --bg4: #1c1c28;
+    --surface: #1e1e2e;
+    --surface2: #252538;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #f0f0f8;
+    --text2: #9090aa;
+    --text3: #5a5a72;
+    --accent: #7c6af7;
+    --accent2: #9d8fff;
+    --accent-dim: rgba(124,106,247,0.15);
+    --accent-glow: rgba(124,106,247,0.3);
+    --green: #34d399;
+    --green-dim: rgba(52,211,153,0.12);
+    --red: #f87171;
+    --red-dim: rgba(248,113,113,0.12);
+    --amber: #fbbf24;
+    --amber-dim: rgba(251,191,36,0.12);
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --r: 10px;
+    --r-lg: 16px;
+    --r-xl: 22px;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ---------- LAYOUT ---------- */
+  .app { display: flex; min-height: 100vh; }
+
+  .sidebar {
+    width: 220px; flex-shrink: 0;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    padding: 24px 0;
+    position: fixed; top: 0; left: 0; height: 100vh;
+    z-index: 10;
+  }
+  .logo {
+    padding: 0 20px 24px;
+    font-family: var(--font-display);
+    font-size: 20px; font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .logo-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow);
+  }
+  .nav { padding: 16px 12px; flex: 1; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; border-radius: var(--r);
+    font-size: 13.5px; font-weight: 400;
+    color: var(--text2); cursor: pointer;
+    transition: all 0.15s; margin-bottom: 2px;
+    border: 1px solid transparent;
+  }
+  .nav-item:hover { color: var(--text); background: var(--bg3); }
+  .nav-item.active {
+    color: var(--text); background: var(--accent-dim);
+    border-color: rgba(124,106,247,0.2);
+    font-weight: 500;
+  }
+  .nav-icon { font-size: 15px; width: 18px; text-align: center; }
+  .nav-section { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: var(--text3); padding: 12px 12px 6px; text-transform: uppercase; }
+
+  .sidebar-footer {
+    padding: 16px 12px 0;
+    border-top: 1px solid var(--border);
+  }
+  .upgrade-card {
+    background: var(--accent-dim);
+    border: 1px solid rgba(124,106,247,0.25);
+    border-radius: var(--r-lg); padding: 14px;
+  }
+  .upgrade-card h4 { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .upgrade-card p { font-size: 11px; color: var(--text2); line-height: 1.5; margin-bottom: 10px; }
+  .upgrade-btn {
+    display: block; width: 100%; padding: 8px;
+    background: var(--accent); color: #fff;
+    border: none; border-radius: var(--r);
+    font-family: var(--font-body); font-size: 12px; font-weight: 500;
+    cursor: pointer; transition: opacity 0.15s;
+  }
+  .upgrade-btn:hover { opacity: 0.85; }
+
+  .main { margin-left: 220px; flex: 1; }
+
+  .topbar {
+    height: 60px; display: flex; align-items: center;
+    padding: 0 28px; border-bottom: 1px solid var(--border);
+    background: var(--bg); position: sticky; top: 0; z-index: 5;
+    justify-content: space-between;
+  }
+  .topbar-title { font-family: var(--font-display); font-size: 16px; font-weight: 700; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .badge-free {
+    background: var(--bg4); border: 1px solid var(--border2);
+    color: var(--text2); font-size: 11px; padding: 3px 10px;
+    border-radius: 99px; font-weight: 500;
+  }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--accent); display: flex; align-items: center;
+    justify-content: center; font-size: 13px; font-weight: 700; color: #fff;
+  }
+
+  .content { padding: 28px; }
+
+  /* ---------- DATE RANGE ---------- */
+  .toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: gap; gap: 12px; }
+  .date-pills { display: flex; gap: 4px; }
+  .pill {
+    padding: 6px 14px; border-radius: 99px; font-size: 12px; font-weight: 500;
+    background: var(--bg3); border: 1px solid var(--border);
+    color: var(--text2); cursor: pointer; transition: all 0.12s;
+  }
+  .pill:hover { color: var(--text); border-color: var(--border2); }
+  .pill.active { background: var(--accent-dim); border-color: rgba(124,106,247,0.35); color: var(--accent2); }
+
+  /* ---------- METRIC STAT BAR ---------- */
+  .metrics-grid {
+    display: flex; margin-bottom: 24px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r-lg); overflow: hidden;
+  }
+  .metric-card {
+    flex: 1; padding: 20px 22px; position: relative;
+    display: flex; flex-direction: column; justify-content: center;
+    transition: background 0.15s;
+  }
+  .metric-card:hover { background: var(--surface2); }
+  .metric-card + .metric-card::before {
+    content: ''; position: absolute; left: 0; top: 20%; height: 60%;
+    width: 1px; background: var(--border);
+  }
+  .metric-card:last-child { border-left: 2px solid var(--accent); }
+  .metric-label { font-size: 10px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text3); margin-bottom: 7px; }
+  .metric-value { font-family: var(--font-display); font-size: 24px; font-weight: 800; color: var(--text); margin-bottom: 5px; line-height: 1; }
+  .metric-delta { display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; }
+  .delta-up { color: var(--green); }
+  .delta-down { color: var(--red); }
+  .delta-label { color: var(--text3); }
+
+  /* ---------- CHARTS ROW ---------- */
+  .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+  .chart-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r-lg); padding: 20px;
+  }
+  .card-title {
+    font-family: var(--font-display); font-size: 13px; font-weight: 700;
+    color: var(--text); margin-bottom: 16px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .card-sub { font-size: 11px; font-weight: 400; color: var(--text3); }
+
+  /* Simple bar chart */
+  .bar-chart { display: flex; flex-direction: column; gap: 10px; }
+  .bar-row { display: flex; align-items: center; gap: 10px; }
+  .bar-name { font-size: 12px; color: var(--text2); width: 90px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar-track { flex: 1; height: 6px; background: var(--bg4); border-radius: 3px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 3px; transition: width 0.8s cubic-bezier(.23,1,.32,1); }
+  .bar-num { font-size: 11px; color: var(--text3); width: 36px; text-align: right; }
+
+  /* Sparkline SVG */
+  .sparkline-wrap { height: 80px; margin-top: 4px; }
+
+  /* ---------- BOTTOM ROW ---------- */
+  .bottom-row { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; }
+
+  /* Campaign table */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 8px 12px; color: var(--text3); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; border-bottom: 1px solid var(--border); }
+  td { padding: 11px 12px; border-bottom: 1px solid var(--border); color: var(--text); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg3); }
+  .status-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 6px; }
+  .status-active { background: var(--green); }
+  .status-paused { background: var(--amber); }
+  .ctr-bar { width: 60px; height: 4px; background: var(--bg4); border-radius: 2px; display: inline-block; vertical-align: middle; margin-right: 6px; overflow: hidden; }
+  .ctr-fill { height: 100%; background: var(--accent); border-radius: 2px; }
+
+  /* ---------- LOCK / PREMIUM ---------- */
+  .lock-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r-lg); padding: 20px;
+    position: relative; overflow: hidden;
+  }
+  .lock-content { filter: blur(4px); opacity: 0.4; pointer-events: none; user-select: none; }
+  .lock-overlay-inner {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 8px;
+  }
+  .lock-icon-wrap {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--accent-dim); border: 1px solid rgba(124,106,247,0.3);
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+  }
+  .lock-overlay-inner h3 { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--text); }
+  .lock-overlay-inner p { font-size: 11px; color: var(--text2); text-align: center; max-width: 160px; line-height: 1.5; }
+  .lock-cta {
+    background: var(--accent); color: #fff; border: none;
+    padding: 8px 20px; border-radius: var(--r); font-size: 12px; font-weight: 500;
+    cursor: pointer; font-family: var(--font-body);
+    transition: opacity 0.15s;
+  }
+  .lock-cta:hover { opacity: 0.85; }
+
+  /* ---------- PAYWALL MODAL ---------- */
+  .modal-bg {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+    display: none; align-items: center; justify-content: center;
+    z-index: 100; backdrop-filter: blur(4px);
+    animation: fadeIn 0.2s ease;
+  }
+  .modal-bg.open { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal {
+    background: var(--bg2); border: 1px solid var(--border2);
+    border-radius: var(--r-xl); padding: 36px;
+    width: 560px; max-width: 95vw;
+    animation: slideUp 0.25s cubic-bezier(.23,1,.32,1);
+    position: relative;
+  }
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .modal-close {
+    position: absolute; top: 16px; right: 16px;
+    background: var(--bg4); border: 1px solid var(--border);
+    color: var(--text2); width: 28px; height: 28px;
+    border-radius: 50%; cursor: pointer; font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    transition: color 0.15s;
+  }
+  .modal-close:hover { color: var(--text); }
+  .modal h2 { font-family: var(--font-display); font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+  .modal-sub { font-size: 13px; color: var(--text2); margin-bottom: 28px; }
+  .plans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+  .plan {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--r-lg); padding: 20px;
+    cursor: pointer; transition: border-color 0.15s;
+    position: relative;
+  }
+  .plan:hover { border-color: var(--border2); }
+  .plan.featured { border-color: var(--accent); background: var(--accent-dim); }
+  .popular-badge {
+    position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+    background: var(--accent); color: #fff; font-size: 10px; font-weight: 600;
+    padding: 3px 12px; border-radius: 99px; white-space: nowrap;
+    letter-spacing: 0.03em;
+  }
+  .plan-name { font-family: var(--font-display); font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .plan-price { font-family: var(--font-display); font-size: 28px; font-weight: 800; color: var(--text); margin-bottom: 2px; line-height: 1; }
+  .plan-price small { font-size: 12px; font-weight: 400; color: var(--text2); }
+  .plan-desc { font-size: 11px; color: var(--text2); margin-bottom: 14px; margin-top: 4px; }
+  .plan-features { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .plan-features li { font-size: 12px; color: var(--text2); display: flex; align-items: center; gap: 6px; }
+  .feat-yes { color: var(--green); font-size: 13px; }
+  .feat-no { color: var(--text3); font-size: 13px; }
+  .trial-btn {
+    width: 100%; padding: 13px; background: var(--accent); color: #fff;
+    border: none; border-radius: var(--r-lg); font-family: var(--font-display);
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    transition: opacity 0.15s; letter-spacing: -0.2px;
+  }
+  .trial-btn:hover { opacity: 0.9; }
+  .trial-note { text-align: center; font-size: 11px; color: var(--text3); margin-top: 10px; }
+
+  /* ---------- INSIGHTS PANEL (premium unlock) ---------- */
+  .insight-item { display: flex; gap: 12px; margin-bottom: 14px; align-items: flex-start; }
+  .insight-icon {
+    width: 34px; height: 34px; border-radius: var(--r); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 15px;
+  }
+  .insight-icon.green { background: var(--green-dim); }
+  .insight-icon.amber { background: var(--amber-dim); }
+  .insight-icon.red { background: var(--red-dim); }
+  .insight-icon.purple { background: var(--accent-dim); }
+  .insight-text h4 { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+  .insight-text p { font-size: 11px; color: var(--text2); line-height: 1.5; }
+
+  /* ---------- PREMIUM VIEW ---------- */
+  .premium-banner {
+    background: linear-gradient(135deg, #2a1f6e 0%, #1a1030 100%);
+    border: 1px solid rgba(124,106,247,0.3);
+    border-radius: var(--r-lg); padding: 20px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .premium-banner h3 { font-family: var(--font-display); font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+  .premium-banner p { font-size: 12px; color: var(--text2); }
+  .pro-tag { background: var(--accent); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; letter-spacing: 0.05em; margin-left: 8px; }
+
+  /* ---------- HIDDEN / SCREEN SWITCHER ---------- */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ---------- RESPONSIVE ---------- */
+
+  /* Tablet */
+  @media (max-width: 900px) {
+    .metrics-grid { flex-wrap: wrap; }
+    .metric-card { flex: 1 1 30%; }
+    .metric-card + .metric-card::before { display: none; }
+    .metric-card:last-child { border-left: none; border-top: 2px solid var(--accent); }
+    .charts-row { grid-template-columns: 1fr; }
+    .bottom-row { grid-template-columns: 1fr; }
+    .plans-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Mobile */
+  @media (max-width: 640px) {
+    .sidebar { transform: translateX(-100%); transition: transform 0.25s ease; z-index: 50; }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 49; }
+    .sidebar-backdrop.open { display: block; }
+    .main { margin-left: 0; padding-bottom: 70px; }
+    .topbar { padding: 0 16px; }
+    .topbar-title { font-size: 15px; }
+    .content { padding: 16px; }
+    .metrics-grid { flex-wrap: wrap; border-radius: var(--r-lg); }
+    .metric-card { flex: 1 1 45%; min-width: 140px; }
+    .metric-card + .metric-card::before { display: none; }
+    .metric-card:last-child { border-left: none; border-top: 2px solid var(--accent); flex: 1 1 100%; }
+    .metric-card { padding: 14px; }
+    .metric-value { font-size: 20px; }
+    .metric-label { font-size: 10px; }
+    .charts-row { gap: 10px; margin-bottom: 16px; }
+    .bottom-row { gap: 10px; }
+    .chart-card { padding: 14px; }
+    .toolbar { flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 16px; }
+    .toolbar > div:first-child > div:first-child { font-size: 18px; }
+    .lock-card { min-height: 280px; }
+    .plans-grid { grid-template-columns: 1fr; gap: 20px; }
+    .modal { padding: 24px 20px; border-radius: var(--r-xl) var(--r-xl) 0 0; position: fixed; bottom: 0; left: 0; right: 0; width: 100%; max-width: 100%; margin: 0; animation: slideUpMobile 0.3s cubic-bezier(.23,1,.32,1); }
+    .modal-bg { align-items: flex-end; }
+    @keyframes slideUpMobile { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .hamburger { display: flex !important; }
+    .bottom-nav-mobile { display: flex !important; }
+    .topbar-right .badge-free { display: none; }
+    .sidebar-footer { display: none; }
+    #screen-settings > div > div[style*="grid-template-columns:200px"] {
+      grid-template-columns: 1fr !important;
+    }
+    .settings-sidenav { display: none !important; }
+    .settings-mobile-tabs { display: flex !important; }
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { min-width: 480px; }
+  }
+
+  /* Bottom nav mobile */
+  .bottom-nav-mobile {
+    display: none;
+    position: fixed; bottom: 0; left: 0; right: 0;
+    height: 64px; background: var(--bg2);
+    border-top: 1px solid var(--border);
+    z-index: 40; align-items: center;
+    padding: 0 4px 4px;
+    safe-area-inset-bottom: env(safe-area-inset-bottom);
+    padding-bottom: calc(4px + env(safe-area-inset-bottom));
+  }
+  .bnav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 3px; cursor: pointer; padding: 6px 0;
+    border-radius: var(--r); transition: background 0.15s;
+  }
+  .bnav-item:active { background: var(--bg3); }
+  .bnav-icon { font-size: 20px; line-height: 1; }
+  .bnav-label { font-size: 10px; color: var(--text3); font-weight: 500; }
+  .bnav-item.active .bnav-label { color: var(--accent2); }
+  .bnav-item.active .bnav-icon { filter: drop-shadow(0 0 4px var(--accent-glow)); }
+
+  /* Hamburger */
+  .hamburger {
+    display: none; flex-direction: column; gap: 4px;
+    cursor: pointer; padding: 6px; border-radius: var(--r);
+    background: none; border: none; margin-right: 8px;
+  }
+  .hamburger span {
+    display: block; width: 18px; height: 2px;
+    background: var(--text2); border-radius: 2px; transition: 0.2s;
+  }
+
+  /* Settings mobile tabs (horizontal scroll) */
+  .settings-mobile-tabs {
+    display: none; gap: 8px; overflow-x: auto; padding-bottom: 12px;
+    margin-bottom: 16px; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .settings-mobile-tabs::-webkit-scrollbar { display: none; }
+  .smob-tab {
+    flex-shrink: 0; padding: 7px 14px; border-radius: 99px;
+    font-size: 12px; font-weight: 500; cursor: pointer;
+    background: var(--bg3); border: 1px solid var(--border);
+    color: var(--text2); white-space: nowrap;
+  }
+  .smob-tab.active {
+    background: var(--accent-dim); border-color: rgba(124,106,247,0.35);
+    color: var(--accent2);
+  }
+
+  /* Subtle glow on accent elements */
+  .glow { box-shadow: 0 0 24px var(--accent-glow); }
+
+  /* Animated sparkline */
+  @keyframes drawLine { from { stroke-dashoffset: 500; } to { stroke-dashoffset: 0; } }
+  .spark-path { stroke-dasharray: 500; stroke-dashoffset: 500; animation: drawLine 1.2s ease forwards 0.3s; }
+
+  /* ── LANDING PAGE ── */
+  #landing {
+    position: fixed; inset: 0; z-index: 1000;
+    background: #05050a; overflow-y: auto; overflow-x: hidden;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  #landing.hiding {
+    opacity: 0; transform: translateY(-24px); pointer-events: none;
+  }
+  html { scroll-behavior: smooth; }
+
+  /* landing nav */
+  .l-nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px;
+    background: rgba(5,5,10,0.85); backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .l-logo { font-family: var(--font-display); font-size: 20px; font-weight: 800; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; }
+  .l-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px rgba(124,106,247,0.6); }
+  .l-nav-links { display: flex; align-items: center; gap: 32px; }
+  .l-nav-links a { font-size: 14px; color: var(--text2); text-decoration: none; transition: color 0.15s; }
+  .l-nav-links a:hover { color: var(--text); }
+  .l-btn-ghost { padding: 8px 20px; border: 1px solid rgba(255,255,255,0.12); border-radius: 99px; font-size: 13px; font-weight: 500; color: var(--text2); background: none; cursor: pointer; font-family: var(--font-body); transition: all 0.15s; }
+  .l-btn-ghost:hover { color: var(--text); }
+  .l-btn-primary { padding: 9px 22px; background: var(--accent); border: none; border-radius: 99px; font-size: 13px; font-weight: 600; color: #fff; cursor: pointer; font-family: var(--font-body); transition: opacity 0.15s; }
+  .l-btn-primary:hover { opacity: 0.85; }
+
+  /* hero */
+  .l-hero {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+    padding: 120px 24px 80px; position: relative; overflow: hidden;
+  }
+  .l-glow1 { position: absolute; top: 10%; left: 50%; transform: translateX(-50%); width: 700px; height: 700px; border-radius: 50%; background: radial-gradient(circle,rgba(124,106,247,0.18) 0%,transparent 70%); pointer-events: none; }
+  .l-glow2 { position: absolute; bottom: -10%; right: -10%; width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle,rgba(52,211,153,0.08) 0%,transparent 70%); pointer-events: none; }
+  .l-eyebrow { display: inline-flex; align-items: center; gap: 8px; background: rgba(124,106,247,0.12); border: 1px solid rgba(124,106,247,0.25); padding: 5px 14px; border-radius: 99px; font-size: 12px; font-weight: 600; color: var(--accent2); letter-spacing: 0.05em; margin-bottom: 28px; }
+  .l-pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: lpulse 2s infinite; }
+  @keyframes lpulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+  .l-h1 { font-family: var(--font-display); font-size: clamp(44px,7vw,88px); font-weight: 800; line-height: 0.95; letter-spacing: -3px; margin-bottom: 28px; max-width: 900px; }
+  .l-h1 span { background: linear-gradient(135deg,#c4baff 0%,#7c6af7 50%,#4a3fc9 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .l-sub { font-size: clamp(15px,2.2vw,19px); color: var(--text2); line-height: 1.65; max-width: 540px; margin: 0 auto 44px; font-weight: 300; }
+  .l-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: center; margin-bottom: 16px; }
+  .l-cta-main { padding: 14px 32px; background: var(--accent); border: none; border-radius: 99px; font-size: 15px; font-weight: 700; color: #fff; cursor: pointer; font-family: var(--font-display); transition: all 0.2s; box-shadow: 0 0 40px rgba(124,106,247,0.35); }
+  .l-cta-main:hover { transform: translateY(-2px); box-shadow: 0 0 60px rgba(124,106,247,0.5); }
+  .l-cta-ghost { padding: 14px 32px; background: none; border: 1px solid rgba(255,255,255,0.12); border-radius: 99px; font-size: 15px; font-weight: 500; color: var(--text2); cursor: pointer; font-family: var(--font-body); transition: all 0.2s; }
+  .l-cta-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.25); }
+  .l-note { font-size: 12px; color: var(--text3); }
+
+  /* dashboard preview */
+  .l-preview { width: 100%; max-width: 860px; margin: 48px auto 0; background: #0a0a12; border: 1px solid rgba(255,255,255,0.12); border-radius: 20px; overflow: hidden; box-shadow: 0 40px 120px rgba(0,0,0,0.6), 0 0 0 1px rgba(124,106,247,0.1); }
+  .l-preview-bar { height: 40px; background: #0f0f1a; border-bottom: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; padding: 0 16px; gap: 8px; }
+  .l-prev-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .l-stats { display: flex; background: rgba(255,255,255,0.03); }
+  .l-stat { flex: 1; padding: 16px 18px; border-right: 1px solid rgba(255,255,255,0.07); }
+  .l-stat:last-child { border-right: none; border-left: 2px solid var(--accent); }
+  .l-stat-lbl { font-size: 9px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 5px; }
+  .l-stat-val { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 3px; line-height: 1; }
+  .l-stat-d { font-size: 10px; font-weight: 600; }
+  .ldup { color: #34d399; } .lddn { color: #f87171; }
+  .l-charts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 12px; }
+  .l-chart-card { background: #0f0f1a; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 12px; }
+  .l-chart-lbl { font-size: 9px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text3); margin-bottom: 8px; }
+  .l-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+  .l-bar-name { font-size: 10px; color: var(--text2); width: 70px; flex-shrink: 0; }
+  .l-bar-track { flex: 1; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+  .l-bar-fill { height: 100%; border-radius: 2px; background: var(--accent); }
+  .l-bar-num { font-size: 10px; color: var(--text3); width: 28px; text-align: right; }
+
+  /* marquee */
+  .l-marquee-wrap { border-top: 1px solid rgba(255,255,255,0.07); border-bottom: 1px solid rgba(255,255,255,0.07); padding: 32px 0; overflow: hidden; }
+  .l-marquee-lbl { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 20px; }
+  .l-marquee-track { display: flex; gap: 56px; animation: lmarquee 22s linear infinite; width: max-content; }
+  @keyframes lmarquee { from{transform:translateX(0);} to{transform:translateX(-50%);} }
+  .l-marquee-item { font-family: var(--font-display); font-size: 17px; font-weight: 700; color: var(--text3); white-space: nowrap; letter-spacing: -0.3px; }
+
+  /* sections */
+  .l-section { padding: 96px 48px; }
+  .l-section-alt { padding: 96px 48px; background: rgba(255,255,255,0.02); border-top: 1px solid rgba(255,255,255,0.07); border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .l-eyebrow2 { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent2); margin-bottom: 12px; }
+  .l-sh2 { font-family: var(--font-display); font-size: clamp(28px,4.5vw,48px); font-weight: 800; letter-spacing: -1.5px; line-height: 1.05; margin-bottom: 16px; }
+  .l-ssub { font-size: 16px; color: var(--text2); line-height: 1.65; max-width: 500px; font-weight: 300; }
+
+  /* features grid */
+  .l-features { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-top: 52px; }
+  .l-feat { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 18px; padding: 26px; transition: border-color 0.2s, background 0.2s; position: relative; overflow: hidden; }
+  .l-feat::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background: linear-gradient(90deg,transparent,rgba(124,106,247,0.4),transparent); opacity:0; transition:opacity 0.3s; }
+  .l-feat:hover { border-color: rgba(124,106,247,0.25); background: rgba(124,106,247,0.05); }
+  .l-feat:hover::before { opacity: 1; }
+  .l-feat.pro { border-color: rgba(124,106,247,0.15); background: rgba(124,106,247,0.05); }
+  .l-feat-icon { font-size: 26px; margin-bottom: 14px; }
+  .l-feat-title { font-family: var(--font-display); font-size: 16px; font-weight: 700; margin-bottom: 7px; }
+  .l-feat-desc { font-size: 13px; color: var(--text2); line-height: 1.65; }
+  .l-pro-chip { display: inline-block; background: var(--accent); color: #fff; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
+
+  /* bento */
+  .l-bento { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-top: 52px; }
+  .l-bento-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 18px; padding: 26px; }
+  .l-bento-card.wide { grid-column: span 2; }
+  .l-bento-lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 7px; }
+  .l-bento-title { font-family: var(--font-display); font-size: 18px; font-weight: 700; margin-bottom: 7px; line-height: 1.2; }
+  .l-bento-desc { font-size: 13px; color: var(--text2); line-height: 1.6; }
+  .l-bento-num { font-family: var(--font-display); font-size: 52px; font-weight: 800; line-height: 1; margin: 10px 0 3px; background: linear-gradient(135deg,#c4baff,#7c6af7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .l-bento-sub { font-size: 11px; color: var(--text3); }
+  .l-plat-logos { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .l-plat { padding: 5px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.07); border-radius: 99px; font-size: 11px; font-weight: 600; color: var(--text2); }
+
+  /* testimonials */
+  .l-tests { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-top: 52px; }
+  .l-test { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 18px; padding: 26px; position: relative; }
+  .l-test::before { content:'\201C'; font-family:Georgia,serif; font-size:56px; color:var(--accent); opacity:0.18; position:absolute; top:10px; left:18px; line-height:1; }
+  .l-test-text { font-size: 13px; color: var(--text2); line-height: 1.7; margin-bottom: 18px; position: relative; z-index: 1; font-style: italic; }
+  .l-test-author { display: flex; align-items: center; gap: 10px; }
+  .l-test-av { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0; }
+  .l-test-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .l-test-role { font-size: 11px; color: var(--text3); }
+  .l-stars { display: flex; gap: 2px; margin-bottom: 10px; }
+  .l-star { color: #fbbf24; font-size: 11px; }
+
+  /* pricing */
+  .l-pricing { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; max-width: 660px; margin: 52px auto 0; }
+  .l-plan { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 22px; padding: 28px; }
+  .l-plan.featured { background: rgba(124,106,247,0.1); border-color: rgba(124,106,247,0.3); position: relative; }
+  .l-plan-badge { position: absolute; top: -11px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #fff; font-size: 10px; font-weight: 700; padding: 3px 14px; border-radius: 99px; white-space: nowrap; }
+  .l-plan-name { font-family: var(--font-display); font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .l-plan-price { font-family: var(--font-display); font-size: 40px; font-weight: 800; line-height: 1; margin: 10px 0 4px; }
+  .l-plan-price span { font-size: 13px; font-weight: 400; color: var(--text2); }
+  .l-plan-desc { font-size: 12px; color: var(--text2); margin-bottom: 20px; }
+  .l-plan-feats { list-style: none; display: flex; flex-direction: column; gap: 9px; margin-bottom: 24px; }
+  .l-plan-feats li { font-size: 12px; color: var(--text2); display: flex; align-items: center; gap: 7px; }
+  .lpf-yes { color: #34d399; } .lpf-pro { color: var(--accent2); } .lpf-no { color: var(--text3); }
+  .l-plan-btn { width: 100%; padding: 11px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: var(--font-display); transition: opacity 0.15s; border: none; }
+  .l-plan-btn.primary { background: var(--accent); color: #fff; }
+  .l-plan-btn.ghost { background: none; border: 1px solid rgba(255,255,255,0.12); color: var(--text2); }
+  .l-plan-btn:hover { opacity: 0.85; }
+
+  /* final cta */
+  .l-final { padding: 120px 48px; text-align: center; position: relative; overflow: hidden; }
+  .l-final-glow { position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:800px;height:400px;background:radial-gradient(ellipse,rgba(124,106,247,0.14) 0%,transparent 70%);pointer-events:none; }
+  .l-final-h2 { font-family: var(--font-display); font-size: clamp(32px,5.5vw,68px); font-weight: 800; letter-spacing: -2px; line-height: 1.05; margin-bottom: 18px; }
+  .l-final-sub { font-size: 16px; color: var(--text2); margin-bottom: 36px; font-weight: 300; }
+
+  /* footer */
+  .l-footer { border-top: 1px solid rgba(255,255,255,0.07); padding: 36px 48px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
+  .l-footer-links { display: flex; gap: 22px; }
+  .l-footer-links a { font-size: 13px; color: var(--text3); text-decoration: none; transition: color 0.15s; }
+  .l-footer-links a:hover { color: var(--text2); }
+  .l-copy { font-size: 12px; color: var(--text3); }
+
+  /* scroll fade */
+  .l-fade { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
+  .l-fade.visible { opacity: 1; transform: translateY(0); }
+
+  /* responsive */
+  @media(max-width:900px) {
+    .l-nav { padding: 14px 20px; }
+    .l-nav-links { display: none; }
+    .l-section,.l-section-alt,.l-final { padding: 64px 20px; }
+    .l-features { grid-template-columns: 1fr 1fr; }
+    .l-bento { grid-template-columns: 1fr 1fr; }
+    .l-bento-card.wide { grid-column: span 2; }
+    .l-tests { grid-template-columns: 1fr; }
+    .l-pricing { grid-template-columns: 1fr; max-width: 360px; }
+    .l-stats { flex-wrap: wrap; }
+    .l-stat { flex: 1 1 30%; }
+    .l-charts { grid-template-columns: 1fr; }
+    .l-footer { flex-direction: column; align-items: flex-start; }
+  }
+  @media(max-width:580px) {
+    .l-hero { padding: 90px 18px 60px; }
+    .l-actions { flex-direction: column; width: 100%; }
+    .l-cta-main,.l-cta-ghost { width: 100%; text-align: center; }
+    .l-features { grid-template-columns: 1fr; }
+    .l-bento { grid-template-columns: 1fr; }
+    .l-bento-card.wide { grid-column: span 1; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     LANDING PAGE — shown first, hides on CTA
+════════════════════════════════════════════ -->
+<div id="landing">
+
+  <!-- NAV -->
+  <nav class="l-nav">
+    <div class="l-logo"><div class="l-dot"></div>Adlytics</div>
+    <div class="l-nav-links">
+      <a href="#l-features">Features</a>
+      <a href="#l-how">How it works</a>
+      <a href="#l-pricing">Pricing</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <button class="l-btn-ghost" onclick="enterApp()">Sign in</button>
+      <button class="l-btn-primary" onclick="enterApp()">Get started free</button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="l-hero">
+    <div class="l-glow1"></div>
+    <div class="l-glow2"></div>
+    <div class="l-eyebrow"><div class="l-pulse"></div>Now supporting Google, Meta, TikTok &amp; LinkedIn</div>
+    <h1 class="l-h1">Stop guessing.<br><span>Start winning.</span></h1>
+    <p class="l-sub">Adlytics pulls your ad data from every platform into one dashboard — so you always know what's working, what's wasting money, and what to do next.</p>
+    <div class="l-actions">
+      <button class="l-cta-main" onclick="enterApp()">Connect your first account →</button>
+      <a href="#l-how" class="l-cta-ghost" style="text-decoration:none;display:inline-block;text-align:center;">See how it works</a>
+    </div>
+    <p class="l-note">7-day free trial · No credit card · Cancel anytime</p>
+
+    <div class="l-preview l-fade">
+      <div class="l-preview-bar">
+        <div class="l-prev-dot" style="background:#f87171;"></div>
+        <div class="l-prev-dot" style="background:#fbbf24;"></div>
+        <div class="l-prev-dot" style="background:#34d399;"></div>
+        <div style="flex:1;text-align:center;font-size:11px;color:rgba(255,255,255,0.18);font-family:var(--font-body);">adlytics.app/dashboard</div>
+      </div>
+      <div class="l-stats">
+        <div class="l-stat"><div class="l-stat-lbl">Impressions</div><div class="l-stat-val">142.4K</div><div class="l-stat-d ldup">↑ 8.3%</div></div>
+        <div class="l-stat"><div class="l-stat-lbl">CTR</div><div class="l-stat-val">3.61%</div><div class="l-stat-d lddn">↓ 0.4%</div></div>
+        <div class="l-stat"><div class="l-stat-lbl">Total spend</div><div class="l-stat-val">$1,840</div><div class="l-stat-d ldup">↑ 12.1%</div></div>
+        <div class="l-stat"><div class="l-stat-lbl">Conversions</div><div class="l-stat-val">284</div><div class="l-stat-d ldup">↑ 5.6%</div></div>
+        <div class="l-stat"><div class="l-stat-lbl">Cost / conv.</div><div class="l-stat-val">$6.48</div><div class="l-stat-d ldup">↓ 5.2%</div></div>
+      </div>
+      <div class="l-charts">
+        <div class="l-chart-card">
+          <div class="l-chart-lbl">Clicks over time · last 30 days</div>
+          <svg width="100%" height="44" viewBox="0 0 400 44" preserveAspectRatio="none">
+            <defs><linearGradient id="lg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7c6af7" stop-opacity="0.3"/><stop offset="100%" stop-color="#7c6af7" stop-opacity="0"/></linearGradient></defs>
+            <path d="M0,38 L40,32 L80,26 L120,20 L160,16 L200,12 L240,8 L280,6 L320,4 L360,3 L400,2 L400,44 L0,44Z" fill="url(#lg1)"/>
+            <path d="M0,38 L40,32 L80,26 L120,20 L160,16 L200,12 L240,8 L280,6 L320,4 L360,3 L400,2" fill="none" stroke="#7c6af7" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <div class="l-chart-card">
+          <div class="l-chart-lbl">Top campaigns by CTR</div>
+          <div class="l-bar-row"><div class="l-bar-name">Summer sale</div><div class="l-bar-track"><div class="l-bar-fill" style="width:82%"></div></div><div class="l-bar-num">8.2%</div></div>
+          <div class="l-bar-row"><div class="l-bar-name">Brand aware.</div><div class="l-bar-track"><div class="l-bar-fill" style="width:65%"></div></div><div class="l-bar-num">6.5%</div></div>
+          <div class="l-bar-row"><div class="l-bar-name">Retargeting</div><div class="l-bar-track"><div class="l-bar-fill" style="width:48%"></div></div><div class="l-bar-num">4.8%</div></div>
+          <div class="l-bar-row"><div class="l-bar-name">Promo Q4</div><div class="l-bar-track"><div class="l-bar-fill" style="width:31%"></div></div><div class="l-bar-num">3.1%</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="l-marquee-wrap">
+    <p class="l-marquee-lbl">Works with all your ad platforms</p>
+    <div style="overflow:hidden;">
+      <div class="l-marquee-track">
+        <div class="l-marquee-item">Google Ads</div><div class="l-marquee-item">·</div>
+        <div class="l-marquee-item">Meta Ads</div><div class="l-marquee-item">·</div>
+        <div class="l-marquee-item">TikTok Ads</div><div class="l-marquee-item">·</div>
+        <div class="l-marquee-item">LinkedIn Ads</div><div class="l-marquee-item">·</div>
+        <div class="l-marquee-item">Google Analytics</div><div class="l-marquee-item">·</div>
+        <div class="l-marquee-item">Google Ads</div><div class="l-marquee-item">·</div>
+        <div class="l-marquee-item">Meta Ads</div><div class="l-marquee-item">·</div>
+        <div class="l-marquee-item">TikTok Ads</div><div class="l-marquee-item">·</div>
+        <div class="l-marquee-item">LinkedIn Ads</div><div class="l-marquee-item">·</div>
+        <div class="l-marquee-item">Google Analytics</div><div class="l-marquee-item">·</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="l-section" id="l-features">
+    <div class="l-fade">
+      <div class="l-eyebrow2">Features</div>
+      <h2 class="l-sh2">Everything you need.<br>Nothing you don't.</h2>
+      <p class="l-ssub">Built for marketers who are tired of switching between five tabs just to answer one question.</p>
+    </div>
+    <div class="l-features l-fade">
+      <div class="l-feat"><div class="l-feat-icon">⚡</div><div class="l-feat-title">Real-time sync</div><div class="l-feat-desc">Numbers update every hour. No manual exports, no copy-pasting from platform dashboards.</div></div>
+      <div class="l-feat"><div class="l-feat-icon">📊</div><div class="l-feat-title">Cross-platform view</div><div class="l-feat-desc">Google, Meta, TikTok, LinkedIn — all in one place. Compare performance without a spreadsheet.</div></div>
+      <div class="l-feat"><div class="l-feat-icon">🎯</div><div class="l-feat-title">Campaign Creatives</div><div class="l-feat-desc">Track every ad asset — banners, videos, carousels. See which creative drives results and which to cut.</div></div>
+      <div class="l-feat pro"><div class="l-feat-icon">🔍</div><div class="l-feat-title">AI Insights <span class="l-pro-chip">PRO</span></div><div class="l-feat-desc">Smart recommendations: which campaigns to scale, which to pause, and the best times to run your ads.</div></div>
+      <div class="l-feat pro"><div class="l-feat-icon">🔔</div><div class="l-feat-title">Alerts <span class="l-pro-chip">PRO</span></div><div class="l-feat-desc">Get notified the moment a campaign overspends, CTR drops, or a sync fails — before it costs you money.</div></div>
+      <div class="l-feat pro"><div class="l-feat-icon">📩</div><div class="l-feat-title">Weekly Report <span class="l-pro-chip">PRO</span></div><div class="l-feat-desc">Auto-generated Monday email with your week's performance, trends, and a downloadable PDF.</div></div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="l-section-alt" id="l-how">
+    <div class="l-fade">
+      <div class="l-eyebrow2">How it works</div>
+      <h2 class="l-sh2">Connected in 60 seconds.<br>Insights in minutes.</h2>
+    </div>
+    <div class="l-bento l-fade">
+      <div class="l-bento-card wide">
+        <div class="l-bento-lbl">Step 1</div>
+        <div class="l-bento-title">Connect your ad accounts</div>
+        <div class="l-bento-desc">Click connect, approve read-only access, and you're done. Adlytics never touches your campaigns or budget.</div>
+        <div class="l-plat-logos"><div class="l-plat">🔵 Google Ads</div><div class="l-plat">📘 Meta</div><div class="l-plat">🎵 TikTok</div><div class="l-plat">💼 LinkedIn</div></div>
+      </div>
+      <div class="l-bento-card">
+        <div class="l-bento-lbl">We pull the data</div>
+        <div class="l-bento-title">Auto-syncing every hour</div>
+        <div class="l-bento-desc">No manual exports. Your dashboard stays fresh while you focus on running campaigns.</div>
+        <div class="l-bento-num">1hr</div>
+        <div class="l-bento-sub">average sync interval</div>
+      </div>
+      <div class="l-bento-card">
+        <div class="l-bento-lbl">Your dashboard</div>
+        <div class="l-bento-title">All metrics in one place</div>
+        <div class="l-bento-desc">CTR, spend, conversions, cost-per-conversion — across every platform and every campaign.</div>
+        <div class="l-bento-num">5</div>
+        <div class="l-bento-sub">key metrics tracked live</div>
+      </div>
+      <div class="l-bento-card wide">
+        <div class="l-bento-lbl">Step 3</div>
+        <div class="l-bento-title">Make smarter decisions faster</div>
+        <div class="l-bento-desc">See which campaigns are working, which creatives are underperforming, and get AI-powered recommendations on what to do next — without opening a single platform dashboard.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TESTIMONIALS -->
+  <div class="l-section">
+    <div class="l-fade">
+      <div class="l-eyebrow2">Testimonials</div>
+      <h2 class="l-sh2">Marketers love it.</h2>
+    </div>
+    <div class="l-tests l-fade">
+      <div class="l-test">
+        <div class="l-stars"><span class="l-star">★</span><span class="l-star">★</span><span class="l-star">★</span><span class="l-star">★</span><span class="l-star">★</span></div>
+        <div class="l-test-text">I used to spend Monday mornings pulling reports from Google, Meta, and TikTok separately. Now I open Adlytics and I'm done in 2 minutes.</div>
+        <div class="l-test-author"><div class="l-test-av" style="background:#534AB7;">SL</div><div><div class="l-test-name">Sarah L.</div><div class="l-test-role">Performance Marketer, Shopify brand</div></div></div>
+      </div>
+      <div class="l-test">
+        <div class="l-stars"><span class="l-star">★</span><span class="l-star">★</span><span class="l-star">★</span><span class="l-star">★</span><span class="l-star">★</span></div>
+        <div class="l-test-text">The Weekly Report alone is worth the subscription. My clients get a professional PDF every Monday without me lifting a finger.</div>
+        <div class="l-test-author"><div class="l-test-av" style="background:#0f6e56;">MR</div><div><div class="l-test-name">Marcus R.</div><div class="l-test-role">Founder, Digital Agency</div></div></div>
+      </div>
+      <div class="l-test">
+        <div class="l-stars"><span class="l-star">★</span><span class="l-star">★</span><span class="l-star">★</span><span class="l-star">★</span><span class="l-star">★</span></div>
+        <div class="l-test-text">The spend alert saved me $400 in one week. A campaign had a bug burning budget — Adlytics caught it before I even noticed.</div>
+        <div class="l-test-author"><div class="l-test-av" style="background:#993C1D;">JP</div><div><div class="l-test-name">Jamie P.</div><div class="l-test-role">Growth Lead, SaaS startup</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRICING -->
+  <div class="l-section-alt" id="l-pricing" style="text-align:center;">
+    <div class="l-fade">
+      <div class="l-eyebrow2">Pricing</div>
+      <h2 class="l-sh2">Simple, honest pricing.</h2>
+      <p class="l-ssub" style="margin:0 auto;">Start free. Upgrade when you need more power.</p>
+    </div>
+    <div class="l-pricing l-fade">
+      <div class="l-plan">
+        <div class="l-plan-name">Free</div>
+        <div class="l-plan-price">$0 <span>/ month</span></div>
+        <div class="l-plan-desc">Everything to get started</div>
+        <ul class="l-plan-feats">
+          <li><span class="lpf-yes">✓</span> Live dashboard</li>
+          <li><span class="lpf-yes">✓</span> Up to 5 campaigns</li>
+          <li><span class="lpf-yes">✓</span> 30-day data history</li>
+          <li><span class="lpf-yes">✓</span> Campaign Creatives</li>
+          <li><span class="lpf-no">✗</span> <span style="color:var(--text3)">Alerts</span></li>
+          <li><span class="lpf-no">✗</span> <span style="color:var(--text3)">AI Insights</span></li>
+          <li><span class="lpf-no">✗</span> <span style="color:var(--text3)">Weekly Report</span></li>
+        </ul>
+        <button class="l-plan-btn ghost" onclick="enterApp()">Get started free</button>
+      </div>
+      <div class="l-plan featured">
+        <div class="l-plan-badge">Most popular</div>
+        <div class="l-plan-name">Pro</div>
+        <div class="l-plan-price">$19 <span>/ month</span></div>
+        <div class="l-plan-desc">Everything you need to grow</div>
+        <ul class="l-plan-feats">
+          <li><span class="lpf-yes">✓</span> Everything in Free</li>
+          <li><span class="lpf-yes">✓</span> Unlimited campaigns</li>
+          <li><span class="lpf-yes">✓</span> 1-year data history</li>
+          <li><span class="lpf-pro">★</span> Real-time Alerts</li>
+          <li><span class="lpf-pro">★</span> AI-powered Insights</li>
+          <li><span class="lpf-pro">★</span> Weekly Report + PDF</li>
+          <li><span class="lpf-pro">★</span> Competitor benchmarks</li>
+        </ul>
+        <button class="l-plan-btn primary" onclick="enterApp()">Start 7-day free trial</button>
+      </div>
+    </div>
+    <p style="margin-top:16px;font-size:12px;color:var(--text3);">Trial starts when you connect your first ad account. Cancel anytime.</p>
+  </div>
+
+  <!-- FINAL CTA -->
+  <div class="l-final l-fade">
+    <div class="l-final-glow"></div>
+    <h2 class="l-final-h2">Your ads are running.<br>Are you watching?</h2>
+    <p class="l-final-sub">Connect in 60 seconds. No credit card. Cancel whenever.</p>
+    <button class="l-cta-main" onclick="enterApp()">Get started free →</button>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="l-footer">
+    <div class="l-logo" style="font-size:16px;"><div class="l-dot"></div>Adlytics</div>
+    <div class="l-footer-links"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Contact</a><a href="#l-pricing">Pricing</a></div>
+    <div class="l-copy">© 2025 Adlytics. All rights reserved.</div>
+  </div>
+
+</div><!-- /#landing -->
+
+<!-- ═══════════════════════════════════════
+     APP — revealed after landing page hides
+════════════════════════════════════════ -->
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo"><div class="logo-dot"></div>Adlytics</div>
+    <nav class="nav">
+      <div class="nav-section">Analytics</div>
+      <div class="nav-item active" onclick="showScreen('dashboard')">
+        <span class="nav-icon">⊞</span> Dashboard
+      </div>
+      <div class="nav-item" onclick="showScreen('creatives')">
+        <span class="nav-icon">🖼</span> Campaign Creatives
+      </div>
+      <div class="nav-item" onclick="showScreen('digest')">
+        <span class="nav-icon">📊</span> Weekly Report <span style="font-size:9px;background:var(--accent);color:#fff;padding:1px 6px;border-radius:4px;margin-left:auto;">PRO</span>
+      </div>
+      <div class="nav-section">Account</div>
+      <div class="nav-item" onclick="showScreen('connect')">
+        <span class="nav-icon">🔗</span> Connect Accounts
+      </div>
+      <div class="nav-item" onclick="openPaywall()">
+        <span class="nav-icon">🔔</span> Alerts <span style="font-size:9px;background:var(--accent);color:#fff;padding:1px 6px;border-radius:4px;margin-left:auto;">PRO</span>
+      </div>
+      <div class="nav-item" onclick="showScreen('settings')">
+        <span class="nav-icon">⚙</span> Settings
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="upgrade-card">
+        <h4>Free plan</h4>
+        <p>Upgrade to unlock AI insights, Weekly Report & competitor benchmarks.</p>
+        <button class="upgrade-btn" onclick="openPaywall()">Upgrade to Pro →</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:4px;">
+        <button class="hamburger" onclick="toggleSidebar()" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="topbar-title" id="screen-title">Dashboard</div>
+      </div>
+      <div class="topbar-right">
+        <span class="badge-free">Free plan</span>
+        <div class="avatar">JD</div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ONBOARDING SCREEN (must connect) -->
+      <div class="screen active" id="screen-onboarding">
+        <div style="max-width:480px;margin:40px auto 0;text-align:center;padding:0 8px;">
+          <div style="width:64px;height:64px;border-radius:50%;background:var(--accent-dim);border:1px solid rgba(124,106,247,0.3);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 20px;">📡</div>
+          <div style="font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--text);margin-bottom:8px;">Connect an ad account to get started</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:32px;">Adlytics needs at least one connected platform to show your performance data. It takes about 60 seconds and we only ever read — never modify — your campaigns.</div>
+
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:28px;text-align:left;">
+            <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);">
+              <div style="width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;">1</div>
+              <div><div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;">Choose a platform</div><div style="font-size:12px;color:var(--text3);">Google Ads, Meta, TikTok, or LinkedIn</div></div>
+              <div style="margin-left:auto;font-size:16px;">🔵</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);">
+              <div style="width:32px;height:32px;border-radius:50%;background:var(--bg4);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--text2);flex-shrink:0;">2</div>
+              <div><div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;">Approve read-only access</div><div style="font-size:12px;color:var(--text3);">You'll be redirected to the platform briefly</div></div>
+              <div style="margin-left:auto;font-size:16px;">🔒</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);">
+              <div style="width:32px;height:32px;border-radius:50%;background:var(--bg4);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--text2);flex-shrink:0;">3</div>
+              <div><div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;">Your dashboard populates</div><div style="font-size:12px;color:var(--text3);">Live data appears within minutes</div></div>
+              <div style="margin-left:auto;font-size:16px;">📊</div>
+            </div>
+          </div>
+
+          <button onclick="showScreen('connect')" style="width:100%;padding:14px;background:var(--accent);border:none;border-radius:var(--r-lg);color:#fff;font-family:var(--font-display);font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 0 32px rgba(124,106,247,0.3);">Connect your first account →</button>
+          <div style="font-size:11px;color:var(--text3);margin-top:12px;">Your 7-day Pro trial starts once you connect your first account.</div>
+        </div>
+      </div><!-- /screen-onboarding -->
+
+      <!-- DASHBOARD SCREEN -->
+      <div class="screen" id="screen-dashboard">
+
+        <div class="toolbar">
+          <div>
+            <div style="font-size:22px;font-weight:700;font-family:var(--font-display);margin-bottom:2px;">Good morning, Jamie 👋</div>
+            <div style="font-size:13px;color:var(--text2);">Here's your ad performance at a glance.</div>
+          </div>
+          <div class="date-pills">
+            <div class="pill" onclick="setRange(this,'7d')">7d</div>
+            <div class="pill active" onclick="setRange(this,'30d')">30d</div>
+            <div class="pill" onclick="setRange(this,'90d')">90d</div>
+          </div>
+        </div>
+
+        <!-- METRIC CARDS -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-label">Impressions</div>
+            <div class="metric-value" id="m-impressions">142.4K</div>
+            <div class="metric-delta">
+              <span id="m-impressions-delta" class="delta-up">↑ 8.3%</span>
+              <span class="delta-label">vs prev period</span>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Click-through rate</div>
+            <div class="metric-value" id="m-ctr">3.61%</div>
+            <div class="metric-delta">
+              <span id="m-ctr-delta" class="delta-down">↓ 0.4%</span>
+              <span class="delta-label">vs prev period</span>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Total spend</div>
+            <div class="metric-value" id="m-spend">$1,840</div>
+            <div class="metric-delta">
+              <span id="m-spend-delta" class="delta-up">↑ 12.1%</span>
+              <span class="delta-label">vs prev period</span>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Conversions</div>
+            <div class="metric-value" id="m-conv">284</div>
+            <div class="metric-delta">
+              <span id="m-conv-delta" class="delta-up">↑ 5.6%</span>
+              <span class="delta-label">vs prev period</span>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Cost per conv.</div>
+            <div class="metric-value" id="m-cpc">$6.48</div>
+            <div class="metric-delta">
+              <span id="m-cpc-delta" class="delta-up">↓ 5.2%</span>
+              <span class="delta-label">vs prev period</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CHARTS ROW -->
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="card-title">
+              Clicks over time
+              <span class="card-sub" id="spark-label">last 30 days</span>
+            </div>
+            <div class="sparkline-wrap">
+              <svg id="sparkline-svg" width="100%" height="80" viewBox="0 0 400 80" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#7c6af7" stop-opacity="0.25"/>
+                    <stop offset="100%" stop-color="#7c6af7" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <path id="spark-area" fill="url(#sparkGrad)"/>
+                <path id="spark-line" class="spark-path" fill="none" stroke="#7c6af7" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="card-title">Top campaigns by CTR</div>
+            <div class="bar-chart" id="bar-chart-container"></div>
+          </div>
+        </div>
+
+        <!-- BOTTOM ROW -->
+        <div class="bottom-row">
+          <div class="chart-card">
+            <div class="card-title">Campaigns</div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Campaign</th>
+                    <th>Status</th>
+                    <th>Spend</th>
+                    <th>Impressions</th>
+                    <th>CTR</th>
+                  </tr>
+                </thead>
+                <tbody id="campaigns-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- LOCKED: AI Insights -->
+          <div class="lock-card">
+            <div class="card-title" style="margin-bottom:14px;">AI Insights</div>
+            <div class="lock-content">
+              <div class="insight-item">
+                <div class="insight-icon green">📈</div>
+                <div class="insight-text">
+                  <h4>Increase Summer sale budget</h4>
+                  <p>CTR is 2.3× avg. Allocate +15% budget for higher ROI.</p>
+                </div>
+              </div>
+              <div class="insight-item">
+                <div class="insight-icon amber">⚠️</div>
+                <div class="insight-text">
+                  <h4>Pause "Cold reach" campaign</h4>
+                  <p>Below 2% CTR — underperforming the market by 40%.</p>
+                </div>
+              </div>
+              <div class="insight-item">
+                <div class="insight-icon purple">🕐</div>
+                <div class="insight-text">
+                  <h4>Best run time: Tue–Thu 6–9pm</h4>
+                  <p>Your audience converts 1.8× more in evenings.</p>
+                </div>
+              </div>
+            </div>
+            <div class="lock-overlay-inner">
+              <div class="lock-icon-wrap">🔒</div>
+              <h3>Premium feature</h3>
+              <p>AI insights unlock with a Pro subscription</p>
+              <button class="lock-cta" onclick="openPaywall()">Unlock insights</button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /screen-dashboard -->
+
+      <!-- CAMPAIGN CREATIVES SCREEN -->
+      <div class="screen" id="screen-creatives">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+          <div>
+            <div style="font-size:22px;font-weight:700;font-family:var(--font-display);margin-bottom:2px;">Campaign Creatives</div>
+            <div style="font-size:13px;color:var(--text2);">Track performance by individual ad creative.</div>
+          </div>
+          <button onclick="openAddCreative()" style="padding:9px 18px;background:var(--accent);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body);display:flex;align-items:center;gap:6px;">
+            <span style="font-size:16px;line-height:1;">+</span> Add creative
+          </button>
+        </div>
+        <div id="creatives-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;"></div>
+      </div><!-- /screen-creatives -->
+
+      <!-- ADD CREATIVE MODAL -->
+      <div class="modal-bg" id="add-creative-modal">
+        <div class="modal" style="width:460px;">
+          <button class="modal-close" onclick="closeAddCreative()">✕</button>
+          <h2 style="margin-bottom:4px;">Add creative</h2>
+          <p class="modal-sub">Add a new ad creative to track its performance.</p>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div>
+              <label style="display:block;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Creative name</label>
+              <input id="new-creative-name" type="text" placeholder="e.g. Summer Sale Banner" style="width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-size:13px;font-family:var(--font-body);">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div>
+                <label style="display:block;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Platform</label>
+                <select id="new-creative-platform" style="width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-size:13px;font-family:var(--font-body);">
+                  <option>Google</option>
+                  <option>Meta</option>
+                  <option>TikTok</option>
+                  <option>LinkedIn</option>
+                </select>
+              </div>
+              <div>
+                <label style="display:block;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Format</label>
+                <select id="new-creative-format" style="width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-size:13px;font-family:var(--font-body);">
+                  <option>Image</option>
+                  <option>Video</option>
+                  <option>Carousel</option>
+                  <option>Story</option>
+                </select>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div>
+                <label style="display:block;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">CTR (%)</label>
+                <input id="new-creative-ctr" type="number" placeholder="e.g. 4.2" min="0" max="100" step="0.1" style="width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-size:13px;font-family:var(--font-body);">
+              </div>
+              <div>
+                <label style="display:block;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Spend ($)</label>
+                <input id="new-creative-spend" type="number" placeholder="e.g. 240" min="0" style="width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-size:13px;font-family:var(--font-body);">
+              </div>
+            </div>
+            <div>
+              <label style="display:block;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Status</label>
+              <select id="new-creative-status" style="width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-size:13px;font-family:var(--font-body);">
+                <option value="active">Active</option>
+                <option value="paused">Paused</option>
+              </select>
+            </div>
+            <button onclick="submitAddCreative()" style="width:100%;padding:11px;background:var(--accent);border:none;border-radius:var(--r-lg);color:#fff;font-family:var(--font-display);font-size:14px;font-weight:700;cursor:pointer;margin-top:4px;">Add creative</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONNECT ACCOUNTS SCREEN -->
+      <div class="screen" id="screen-connect">
+        <div style="margin-bottom:24px;">
+          <div style="font-size:22px;font-weight:700;font-family:var(--font-display);margin-bottom:4px;">Connect Accounts</div>
+          <div style="font-size:13px;color:var(--text2);">Link your ad platforms to pull performance data automatically.</div>
+        </div>
+
+        <!-- CONNECTED BANNER -->
+        <div style="background:var(--green-dim);border:1px solid rgba(52,211,153,0.2);border-radius:var(--r-lg);padding:14px 18px;display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+          <div style="font-size:18px;">✅</div>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--green);margin-bottom:1px;">Google Ads connected</div>
+            <div style="font-size:11px;color:var(--text2);">Last synced 12 minutes ago · Account ID: 123-456-7890</div>
+          </div>
+          <button onclick="disconnectGoogle()" style="margin-left:auto;background:none;border:1px solid rgba(52,211,153,0.3);color:var(--text2);font-size:11px;padding:5px 12px;border-radius:var(--r);cursor:pointer;font-family:var(--font-body);transition:color 0.15s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text2)'">Disconnect</button>
+        </div>
+
+        <!-- PLATFORM CARDS -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;">
+
+          <!-- Google Ads — connected -->
+          <div class="chart-card" style="padding:20px;" id="google-card">
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+              <div style="width:44px;height:44px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;border:1px solid var(--border2);font-size:22px;flex-shrink:0;">🔵</div>
+              <div>
+                <div style="font-size:14px;font-weight:600;color:var(--text);">Google Ads</div>
+                <div style="font-size:11px;color:var(--text3);">Search, Display, YouTube</div>
+              </div>
+              <div style="margin-left:auto;padding:3px 10px;background:var(--green-dim);border-radius:99px;font-size:10px;font-weight:600;color:var(--green);">Connected</div>
+            </div>
+            <div style="display:flex;gap:8px;margin-bottom:14px;">
+              <div style="flex:1;background:var(--bg4);border-radius:var(--r);padding:10px;text-align:center;">
+                <div style="font-size:18px;font-weight:700;font-family:var(--font-display);color:var(--text);">3</div>
+                <div style="font-size:10px;color:var(--text3);">Campaigns</div>
+              </div>
+              <div style="flex:1;background:var(--bg4);border-radius:var(--r);padding:10px;text-align:center;">
+                <div style="font-size:18px;font-weight:700;font-family:var(--font-display);color:var(--text);">52.1K</div>
+                <div style="font-size:10px;color:var(--text3);">Impressions</div>
+              </div>
+              <div style="flex:1;background:var(--bg4);border-radius:var(--r);padding:10px;text-align:center;">
+                <div style="font-size:18px;font-weight:700;font-family:var(--font-display);color:var(--green);">$640</div>
+                <div style="font-size:10px;color:var(--text3);">Spend</div>
+              </div>
+            </div>
+            <button style="width:100%;padding:9px;background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r);color:var(--text2);font-size:12px;cursor:pointer;font-family:var(--font-body);">⟳ Sync now</button>
+          </div>
+
+          <!-- Meta — not connected -->
+          <div class="chart-card" style="padding:20px;">
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+              <div style="width:44px;height:44px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;border:1px solid var(--border2);font-size:22px;flex-shrink:0;">📘</div>
+              <div>
+                <div style="font-size:14px;font-weight:600;color:var(--text);">Meta Ads</div>
+                <div style="font-size:11px;color:var(--text3);">Facebook & Instagram</div>
+              </div>
+              <div style="margin-left:auto;padding:3px 10px;background:var(--bg4);border-radius:99px;font-size:10px;font-weight:500;color:var(--text3);">Not connected</div>
+            </div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:14px;">Pull Facebook and Instagram ad performance, creative stats, and audience insights directly into Adlytics.</div>
+            <button onclick="connectPlatform('Meta')" style="width:100%;padding:9px;background:var(--accent);border:none;border-radius:var(--r);color:#fff;font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font-body);transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Connect with Facebook →</button>
+          </div>
+
+          <!-- TikTok — not connected -->
+          <div class="chart-card" style="padding:20px;">
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+              <div style="width:44px;height:44px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;border:1px solid var(--border2);font-size:22px;flex-shrink:0;">🎵</div>
+              <div>
+                <div style="font-size:14px;font-weight:600;color:var(--text);">TikTok Ads</div>
+                <div style="font-size:11px;color:var(--text3);">TikTok for Business</div>
+              </div>
+              <div style="margin-left:auto;padding:3px 10px;background:var(--bg4);border-radius:99px;font-size:10px;font-weight:500;color:var(--text3);">Not connected</div>
+            </div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:14px;">Sync TikTok campaign performance, video engagement rates, and spend data in real time.</div>
+            <button onclick="connectPlatform('TikTok')" style="width:100%;padding:9px;background:var(--accent);border:none;border-radius:var(--r);color:#fff;font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font-body);transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Connect with TikTok →</button>
+          </div>
+
+          <!-- LinkedIn — not connected -->
+          <div class="chart-card" style="padding:20px;">
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+              <div style="width:44px;height:44px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;border:1px solid var(--border2);font-size:22px;flex-shrink:0;">💼</div>
+              <div>
+                <div style="font-size:14px;font-weight:600;color:var(--text);">LinkedIn Ads</div>
+                <div style="font-size:11px;color:var(--text3);">LinkedIn Marketing API</div>
+              </div>
+              <div style="margin-left:auto;padding:3px 10px;background:var(--bg4);border-radius:99px;font-size:10px;font-weight:500;color:var(--text3);">Not connected</div>
+            </div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:14px;">Track LinkedIn Sponsored Content, Message Ads, and lead gen form performance side by side.</div>
+            <button onclick="connectPlatform('LinkedIn')" style="width:100%;padding:9px;background:var(--accent);border:none;border-radius:var(--r);color:#fff;font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font-body);transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Connect with LinkedIn →</button>
+          </div>
+
+          <!-- Google Analytics — coming soon -->
+          <div class="chart-card" style="padding:20px;opacity:0.5;">
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+              <div style="width:44px;height:44px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;border:1px solid var(--border2);font-size:22px;flex-shrink:0;">📈</div>
+              <div>
+                <div style="font-size:14px;font-weight:600;color:var(--text);">Google Analytics</div>
+                <div style="font-size:11px;color:var(--text3);">GA4 · Site traffic</div>
+              </div>
+              <div style="margin-left:auto;padding:3px 10px;background:var(--amber-dim);border-radius:99px;font-size:10px;font-weight:600;color:var(--amber);">Coming soon</div>
+            </div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:14px;">Correlate your ad spend with actual site conversions and user behavior from GA4.</div>
+            <button disabled style="width:100%;padding:9px;background:var(--bg4);border:1px solid var(--border);border-radius:var(--r);color:var(--text3);font-size:12px;cursor:not-allowed;font-family:var(--font-body);">Coming soon</button>
+          </div>
+
+        </div>
+
+        <!-- OAUTH EXPLAINER -->
+        <div style="margin-top:24px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;display:flex;gap:16px;align-items:flex-start;">
+          <div style="font-size:20px;flex-shrink:0;">🔒</div>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">Secure OAuth connection</div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.6;">Adlytics uses official OAuth 2.0 to connect your accounts — we never see your password. You'll be redirected to each platform to approve read-only access, then brought back here automatically. You can disconnect at any time.</div>
+          </div>
+        </div>
+      </div><!-- /screen-connect -->
+
+      <!-- SETTINGS SCREEN -->
+      <div class="screen" id="screen-settings">
+        <div style="margin-bottom:28px;">
+          <div style="font-size:22px;font-weight:700;font-family:var(--font-display);margin-bottom:4px;">Settings</div>
+          <div style="font-size:13px;color:var(--text2);">Manage your profile, notifications, and preferences.</div>
+        </div>
+
+        <!-- SETTINGS TABS (mobile) -->
+        <div class="settings-mobile-tabs">
+          <div class="smob-tab active" onclick="switchSettingsTab(this,'profile');switchSmobTab(this)">👤 Profile</div>
+          <div class="smob-tab" onclick="switchSettingsTab(this,'notifications');switchSmobTab(this)">🔔 Notifications</div>
+          <div class="smob-tab" onclick="switchSettingsTab(this,'billing');switchSmobTab(this)">💳 Billing</div>
+          <div class="smob-tab" onclick="switchSettingsTab(this,'preferences');switchSmobTab(this)">⚙ Preferences</div>
+          <div class="smob-tab" onclick="switchSettingsTab(this,'danger');switchSmobTab(this)" style="color:var(--red);">⚠ Danger</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:200px 1fr;gap:24px;align-items:start;">
+
+          <!-- SETTINGS NAV (desktop) -->
+          <div class="settings-sidenav" style="display:flex;flex-direction:column;gap:2px;position:sticky;top:84px;">
+            <div class="settings-tab active" onclick="switchSettingsTab(this,'profile')" style="padding:9px 12px;border-radius:var(--r);font-size:13px;cursor:pointer;color:var(--text);background:var(--accent-dim);border:1px solid rgba(124,106,247,0.2);">👤 Profile</div>
+            <div class="settings-tab" onclick="switchSettingsTab(this,'notifications')" style="padding:9px 12px;border-radius:var(--r);font-size:13px;cursor:pointer;color:var(--text2);background:none;border:1px solid transparent;">🔔 Notifications</div>
+            <div class="settings-tab" onclick="switchSettingsTab(this,'billing')" style="padding:9px 12px;border-radius:var(--r);font-size:13px;cursor:pointer;color:var(--text2);background:none;border:1px solid transparent;">💳 Billing</div>
+            <div class="settings-tab" onclick="switchSettingsTab(this,'preferences')" style="padding:9px 12px;border-radius:var(--r);font-size:13px;cursor:pointer;color:var(--text2);background:none;border:1px solid transparent;">⚙ Preferences</div>
+            <div class="settings-tab" onclick="switchSettingsTab(this,'danger')" style="padding:9px 12px;border-radius:var(--r);font-size:13px;cursor:pointer;color:var(--red);background:none;border:1px solid transparent;">⚠ Danger zone</div>
+          </div>
+
+          <!-- SETTINGS PANELS -->
+          <div>
+
+            <!-- PROFILE -->
+            <div class="settings-panel active" id="panel-profile">
+              <div class="chart-card" style="margin-bottom:14px;">
+                <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:16px;">Profile information</div>
+                <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+                  <div style="width:60px;height:60px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;flex-shrink:0;">JD</div>
+                  <div>
+                    <button style="padding:7px 14px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-size:12px;cursor:pointer;font-family:var(--font-body);margin-right:8px;">Upload photo</button>
+                    <button style="padding:7px 14px;background:none;border:1px solid var(--border);border-radius:var(--r);color:var(--text2);font-size:12px;cursor:pointer;font-family:var(--font-body);">Remove</button>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+                  <div>
+                    <label style="display:block;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">First name</label>
+                    <input type="text" value="Jamie" style="width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-size:13px;font-family:var(--font-body);">
+                  </div>
+                  <div>
+                    <label style="display:block;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Last name</label>
+                    <input type="text" value="Doe" style="width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-size:13px;font-family:var(--font-body);">
+                  </div>
+                </div>
+                <div style="margin-bottom:14px;">
+                  <label style="display:block;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Email address</label>
+                  <input type="email" value="jamie@company.com" style="width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-size:13px;font-family:var(--font-body);">
+                </div>
+                <div style="margin-bottom:20px;">
+                  <label style="display:block;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Company</label>
+                  <input type="text" value="Acme Marketing Co." style="width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-size:13px;font-family:var(--font-body);">
+                </div>
+                <button style="padding:9px 20px;background:var(--accent);border:none;border-radius:var(--r);color:#fff;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-body);">Save changes</button>
+              </div>
+
+              <div class="chart-card">
+                <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:16px;">Password</div>
+                <div style="margin-bottom:14px;">
+                  <label style="display:block;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Current password</label>
+                  <input type="password" placeholder="••••••••" style="width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-size:13px;font-family:var(--font-body);">
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;">
+                  <div>
+                    <label style="display:block;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">New password</label>
+                    <input type="password" placeholder="••••••••" style="width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-size:13px;font-family:var(--font-body);">
+                  </div>
+                  <div>
+                    <label style="display:block;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Confirm password</label>
+                    <input type="password" placeholder="••••••••" style="width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-size:13px;font-family:var(--font-body);">
+                  </div>
+                </div>
+                <button style="padding:9px 20px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-body);">Update password</button>
+              </div>
+            </div>
+
+            <!-- NOTIFICATIONS -->
+            <div class="settings-panel" id="panel-notifications" style="display:none;">
+              <div class="chart-card">
+                <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">Email notifications</div>
+                <div style="font-size:12px;color:var(--text2);margin-bottom:20px;">Choose what updates get sent to jamie@company.com</div>
+                <div style="display:flex;flex-direction:column;">
+
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);">
+                    <div>
+                      <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px;">Weekly performance digest</div>
+                      <div style="font-size:11px;color:var(--text3);">A summary of all your campaign metrics every Monday</div>
+                    </div>
+                    <div class="toggle tog-on" onclick="flipToggle(this)" style="width:38px;height:22px;border-radius:11px;background:var(--accent);border:1px solid var(--accent);cursor:pointer;position:relative;flex-shrink:0;margin-left:16px;transition:background 0.2s,border-color 0.2s;">
+                      <div style="width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;left:18px;transition:left 0.2s;"></div>
+                    </div>
+                  </div>
+
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);">
+                    <div>
+                      <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px;">Campaign spend alerts</div>
+                      <div style="font-size:11px;color:var(--text3);">Notify when a campaign exceeds its daily budget</div>
+                    </div>
+                    <div class="toggle tog-on" onclick="flipToggle(this)" style="width:38px;height:22px;border-radius:11px;background:var(--accent);border:1px solid var(--accent);cursor:pointer;position:relative;flex-shrink:0;margin-left:16px;transition:background 0.2s,border-color 0.2s;">
+                      <div style="width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;left:18px;transition:left 0.2s;"></div>
+                    </div>
+                  </div>
+
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);">
+                    <div>
+                      <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px;">Low CTR warnings</div>
+                      <div style="font-size:11px;color:var(--text3);">Alert when CTR drops below your threshold</div>
+                    </div>
+                    <div class="toggle" onclick="flipToggle(this)" style="width:38px;height:22px;border-radius:11px;background:var(--bg4);border:1px solid var(--border2);cursor:pointer;position:relative;flex-shrink:0;margin-left:16px;transition:background 0.2s,border-color 0.2s;">
+                      <div style="width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:left 0.2s;"></div>
+                    </div>
+                  </div>
+
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);">
+                    <div>
+                      <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px;">New platform sync errors</div>
+                      <div style="font-size:11px;color:var(--text3);">Alert when a connected account fails to sync</div>
+                    </div>
+                    <div class="toggle tog-on" onclick="flipToggle(this)" style="width:38px;height:22px;border-radius:11px;background:var(--accent);border:1px solid var(--accent);cursor:pointer;position:relative;flex-shrink:0;margin-left:16px;transition:background 0.2s,border-color 0.2s;">
+                      <div style="width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;left:18px;transition:left 0.2s;"></div>
+                    </div>
+                  </div>
+
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;">
+                    <div>
+                      <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px;">Product updates &amp; news</div>
+                      <div style="font-size:11px;color:var(--text3);">New features, tips, and announcements from Adlytics</div>
+                    </div>
+                    <div class="toggle" onclick="flipToggle(this)" style="width:38px;height:22px;border-radius:11px;background:var(--bg4);border:1px solid var(--border2);cursor:pointer;position:relative;flex-shrink:0;margin-left:16px;transition:background 0.2s,border-color 0.2s;">
+                      <div style="width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:left 0.2s;"></div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <!-- BILLING -->
+            <div class="settings-panel" id="panel-billing" style="display:none;">
+              <div class="chart-card" style="margin-bottom:14px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                  <div style="font-size:14px;font-weight:600;color:var(--text);">Current plan</div>
+                  <div style="padding:3px 10px;background:var(--bg4);border-radius:99px;font-size:11px;font-weight:500;color:var(--text2);">Free</div>
+                </div>
+
+                <!-- Current plan summary -->
+                <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;margin-bottom:14px;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                    <div>
+                      <div style="font-size:13px;font-weight:600;color:var(--text);">Free plan</div>
+                      <div style="font-size:11px;color:var(--text3);margin-top:2px;">No payment required</div>
+                    </div>
+                    <div style="font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--text);">$0<span style="font-size:12px;font-weight:400;color:var(--text3);">/mo</span></div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:14px;">
+                    <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2);"><span style="color:var(--green);">✓</span> Dashboard, Creatives, Alerts, Billing — all free</div>
+                    <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2);"><span style="color:var(--green);">✓</span> Up to 5 campaigns</div>
+                    <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2);"><span style="color:var(--green);">✓</span> 30-day data history</div>
+                  </div>
+                  <button onclick="openPaywall()" style="width:100%;padding:9px;background:var(--accent);border:none;border-radius:var(--r);color:#fff;font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font-body);">Upgrade to Pro — $19/mo →</button>
+                </div>
+
+                <!-- What Pro unlocks -->
+                <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">Pro unlocks</div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--accent-dim);border-radius:var(--r);border:1px solid rgba(124,106,247,0.15);">
+                    <span style="font-size:15px;">🔍</span>
+                    <div><div style="font-size:12px;font-weight:500;color:var(--text);">AI-powered insights</div><div style="font-size:11px;color:var(--text3);">Smart budget & timing recommendations</div></div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--accent-dim);border-radius:var(--r);border:1px solid rgba(124,106,247,0.15);">
+                    <span style="font-size:15px;">📊</span>
+                    <div><div style="font-size:12px;font-weight:500;color:var(--text);">Weekly Report</div><div style="font-size:11px;color:var(--text3);">Weekly email reports & PDF exports</div></div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--accent-dim);border-radius:var(--r);border:1px solid rgba(124,106,247,0.15);">
+                    <span style="font-size:15px;">📈</span>
+                    <div><div style="font-size:12px;font-weight:500;color:var(--text);">Competitor benchmarks</div><div style="font-size:11px;color:var(--text3);">See how your ads stack up in your market</div></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="chart-card">
+                <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:16px;">Billing history</div>
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;color:var(--text3);font-size:13px;gap:8px;">
+                  <div style="font-size:28px;opacity:0.3;">🧾</div>
+                  No invoices yet — you're on the free plan
+                </div>
+              </div>
+            </div>
+
+            <!-- PREFERENCES -->
+            <div class="settings-panel" id="panel-preferences" style="display:none;">
+              <div class="chart-card" style="margin-bottom:14px;">
+                <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:20px;">Display preferences</div>
+                <div style="margin-bottom:18px;">
+                  <label style="display:block;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Default date range</label>
+                  <div style="display:flex;gap:8px;">
+                    <div class="pref-pill" onclick="selectPref(this,'range')" style="padding:7px 16px;border-radius:99px;font-size:12px;font-weight:500;cursor:pointer;background:var(--bg4);border:1px solid var(--border);color:var(--text2);">7 days</div>
+                    <div class="pref-pill pref-active" onclick="selectPref(this,'range')" style="padding:7px 16px;border-radius:99px;font-size:12px;font-weight:500;cursor:pointer;background:var(--accent-dim);border:1px solid rgba(124,106,247,0.35);color:var(--accent2);">30 days</div>
+                    <div class="pref-pill" onclick="selectPref(this,'range')" style="padding:7px 16px;border-radius:99px;font-size:12px;font-weight:500;cursor:pointer;background:var(--bg4);border:1px solid var(--border);color:var(--text2);">90 days</div>
+                  </div>
+                </div>
+                <div style="margin-bottom:18px;">
+                  <label style="display:block;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Currency</label>
+                  <select style="padding:9px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-size:13px;font-family:var(--font-body);width:200px;">
+                    <option>USD — US Dollar</option>
+                    <option>EUR — Euro</option>
+                    <option>GBP — British Pound</option>
+                    <option>CAD — Canadian Dollar</option>
+                    <option>AUD — Australian Dollar</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="display:block;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Timezone</label>
+                  <select style="padding:9px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-size:13px;font-family:var(--font-body);width:260px;">
+                    <option>America/New_York (UTC-5)</option>
+                    <option>America/Los_Angeles (UTC-8)</option>
+                    <option>Europe/London (UTC+0)</option>
+                    <option>Europe/Berlin (UTC+1)</option>
+                    <option>Asia/Tokyo (UTC+9)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="chart-card">
+                <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:20px;">Spend alert threshold</div>
+                <div style="font-size:12px;color:var(--text2);margin-bottom:12px;">Get notified when daily spend exceeds this amount per campaign.</div>
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <span style="font-size:16px;color:var(--text2);">$</span>
+                  <input type="number" value="100" min="0" step="10" style="width:120px;padding:9px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-size:16px;font-weight:600;font-family:var(--font-display);">
+                  <span style="font-size:12px;color:var(--text3);">per day</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- DANGER ZONE -->
+            <div class="settings-panel" id="panel-danger" style="display:none;">
+              <div class="chart-card" style="border-color:rgba(248,113,113,0.2);">
+                <div style="font-size:14px;font-weight:600;color:var(--red);margin-bottom:4px;">Danger zone</div>
+                <div style="font-size:12px;color:var(--text2);margin-bottom:20px;">These actions are permanent and cannot be undone.</div>
+                <div style="display:flex;flex-direction:column;gap:14px;">
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-lg);">
+                    <div>
+                      <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px;">Disconnect all platforms</div>
+                      <div style="font-size:11px;color:var(--text3);">Remove all connected ad accounts. Data already synced is kept.</div>
+                    </div>
+                    <button style="padding:8px 14px;background:none;border:1px solid rgba(248,113,113,0.4);border-radius:var(--r);color:var(--red);font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font-body);flex-shrink:0;margin-left:16px;">Disconnect all</button>
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-lg);">
+                    <div>
+                      <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px;">Clear all analytics data</div>
+                      <div style="font-size:11px;color:var(--text3);">Permanently delete all synced performance data. Cannot be undone.</div>
+                    </div>
+                    <button style="padding:8px 14px;background:none;border:1px solid rgba(248,113,113,0.4);border-radius:var(--r);color:var(--red);font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font-body);flex-shrink:0;margin-left:16px;">Clear data</button>
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--red-dim);border:1px solid rgba(248,113,113,0.3);border-radius:var(--r-lg);">
+                    <div>
+                      <div style="font-size:13px;font-weight:500;color:var(--red);margin-bottom:2px;">Delete account</div>
+                      <div style="font-size:11px;color:var(--text3);">Permanently delete your Adlytics account and all associated data.</div>
+                    </div>
+                    <button style="padding:8px 14px;background:var(--red);border:none;border-radius:var(--r);color:#fff;font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font-body);flex-shrink:0;margin-left:16px;">Delete account</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div><!-- /screen-settings -->
+
+      <!-- ALERTS SCREEN (PRO) -->
+      <div class="screen" id="screen-alerts">
+        <div style="margin-bottom:24px;">
+          <div style="font-size:22px;font-weight:700;font-family:var(--font-display);margin-bottom:4px;">Alerts <span style="font-size:12px;font-weight:600;background:var(--accent);color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;margin-left:6px;">PRO</span></div>
+          <div style="font-size:13px;color:var(--text2);">Real-time notifications about your campaign performance.</div>
+        </div>
+
+        <!-- PAYWALL BANNER -->
+        <div style="background:linear-gradient(135deg,#2a1f6e,#1a1030);border:1px solid rgba(124,106,247,0.3);border-radius:var(--r-xl);padding:28px;margin-bottom:24px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
+          <div style="font-size:44px;flex-shrink:0;">🔔</div>
+          <div style="flex:1;min-width:200px;">
+            <div style="font-family:var(--font-display);font-size:18px;font-weight:800;color:var(--text);margin-bottom:6px;">Unlock Alerts</div>
+            <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:16px;">Get notified the moment a campaign overspends, CTR drops, or a sync fails — before it costs you money. Available on Pro.</div>
+            <button onclick="openPaywall()" style="padding:10px 24px;background:var(--accent);border:none;border-radius:var(--r-lg);color:#fff;font-family:var(--font-display);font-size:14px;font-weight:700;cursor:pointer;">Start 7-day free trial →</button>
+          </div>
+        </div>
+
+        <!-- BLURRED PREVIEW -->
+        <div style="position:relative;">
+          <div style="filter:blur(5px);opacity:0.4;pointer-events:none;user-select:none;">
+
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;">
+              <div class="metric-card" style="border-left:3px solid var(--red);">
+                <div class="metric-label">Critical</div>
+                <div class="metric-value" style="font-size:22px;">2</div>
+                <div style="font-size:11px;color:var(--red);">Needs attention</div>
+              </div>
+              <div class="metric-card" style="border-left:3px solid var(--amber);">
+                <div class="metric-label">Warnings</div>
+                <div class="metric-value" style="font-size:22px;">3</div>
+                <div style="font-size:11px;color:var(--amber);">Monitor closely</div>
+              </div>
+              <div class="metric-card" style="border-left:3px solid var(--green);">
+                <div class="metric-label">Resolved</div>
+                <div class="metric-value" style="font-size:22px;">11</div>
+                <div style="font-size:11px;color:var(--green);">Last 30 days</div>
+              </div>
+            </div>
+
+            <div class="chart-card" style="margin-bottom:14px;">
+              <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:14px;">Active alerts</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div style="padding:14px;background:var(--red-dim);border:1px solid rgba(248,113,113,0.2);border-radius:var(--r-lg);">
+                  <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;">🚨 Daily budget exceeded — Cold reach</div>
+                  <div style="font-size:12px;color:var(--text2);">Spent $120 today — 20% over the $100 daily cap.</div>
+                </div>
+                <div style="padding:14px;background:var(--red-dim);border:1px solid rgba(248,113,113,0.2);border-radius:var(--r-lg);">
+                  <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;">📉 CTR drop detected — Brand awareness</div>
+                  <div style="font-size:12px;color:var(--text2);">CTR fell from 6.5% to 3.1% in the last 48 hours.</div>
+                </div>
+                <div style="padding:14px;background:var(--amber-dim);border:1px solid rgba(251,191,36,0.2);border-radius:var(--r-lg);">
+                  <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;">⚠️ Weekly spend 80% of monthly limit</div>
+                  <div style="font-size:12px;color:var(--text2);">$1,840 of $2,300 budget used with 10 days remaining.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:14px;">Alert rules</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <span style="font-size:13px;color:var(--text2);">💸 Daily budget cap exceeded</span>
+                  <div style="width:38px;height:22px;border-radius:11px;background:var(--accent);flex-shrink:0;"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <span style="font-size:13px;color:var(--text2);">📉 CTR drops more than 40%</span>
+                  <div style="width:38px;height:22px;border-radius:11px;background:var(--accent);flex-shrink:0;"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <span style="font-size:13px;color:var(--text2);">💰 Monthly budget at 80%</span>
+                  <div style="width:38px;height:22px;border-radius:11px;background:var(--accent);flex-shrink:0;"></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+            <div style="text-align:center;">
+              <div style="width:48px;height:48px;border-radius:50%;background:var(--accent-dim);border:1px solid rgba(124,106,247,0.3);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 10px;">🔒</div>
+              <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">Pro feature</div>
+              <div style="font-size:12px;color:var(--text2);margin-bottom:12px;">Upgrade to unlock real-time alerts</div>
+              <button onclick="openPaywall()" style="padding:8px 20px;background:var(--accent);border:none;border-radius:var(--r);color:#fff;font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font-body);">Upgrade to Pro</button>
+            </div>
+          </div>
+        </div>
+      </div><!-- /screen-alerts -->
+
+      <!-- PERFORMANCE DIGEST SCREEN (PRO) -->
+      <div class="screen" id="screen-digest">
+        <div style="margin-bottom:24px;">
+          <div style="font-size:22px;font-weight:700;font-family:var(--font-display);margin-bottom:4px;">Weekly Report <span style="font-size:12px;font-weight:600;background:var(--accent);color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;margin-left:6px;">PRO</span></div>
+          <div style="font-size:13px;color:var(--text2);">Weekly summaries and in-depth analytics reports.</div>
+        </div>
+
+        <!-- PAYWALL BANNER -->
+        <div style="background:linear-gradient(135deg,#2a1f6e,#1a1030);border:1px solid rgba(124,106,247,0.3);border-radius:var(--r-xl);padding:28px;margin-bottom:24px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
+          <div style="font-size:44px;flex-shrink:0;">📊</div>
+          <div style="flex:1;min-width:200px;">
+            <div style="font-family:var(--font-display);font-size:18px;font-weight:800;color:var(--text);margin-bottom:6px;">Unlock Weekly Report</div>
+            <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:16px;">Get automated weekly email reports, exportable PDFs, and deep-dive campaign breakdowns — all with a Pro subscription.</div>
+            <button onclick="openPaywall()" style="padding:10px 24px;background:var(--accent);border:none;border-radius:var(--r-lg);color:#fff;font-family:var(--font-display);font-size:14px;font-weight:700;cursor:pointer;">Start 7-day free trial →</button>
+          </div>
+        </div>
+
+        <!-- BLURRED PREVIEW -->
+        <div style="position:relative;">
+          <div style="filter:blur(5px);opacity:0.4;pointer-events:none;user-select:none;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+              <div class="chart-card">
+                <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px;">Week of Apr 7 — Apr 13</div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;color:var(--text2);">Total impressions</span><span style="font-size:12px;font-weight:600;color:var(--text);">38.2K</span></div>
+                  <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;color:var(--text2);">Avg CTR</span><span style="font-size:12px;font-weight:600;color:var(--green);">4.1%</span></div>
+                  <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;color:var(--text2);">Total spend</span><span style="font-size:12px;font-weight:600;color:var(--text);">$482</span></div>
+                  <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;color:var(--text2);">Conversions</span><span style="font-size:12px;font-weight:600;color:var(--text);">74</span></div>
+                  <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;color:var(--text2);">Cost per conversion</span><span style="font-size:12px;font-weight:600;color:var(--text);">$6.51</span></div>
+                </div>
+                <button style="margin-top:14px;width:100%;padding:8px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);font-size:12px;color:var(--text2);">Download PDF</button>
+              </div>
+              <div class="chart-card">
+                <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px;">Week of Mar 31 — Apr 6</div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;color:var(--text2);">Total impressions</span><span style="font-size:12px;font-weight:600;color:var(--text);">35.6K</span></div>
+                  <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;color:var(--text2);">Avg CTR</span><span style="font-size:12px;font-weight:600;color:var(--text);">3.8%</span></div>
+                  <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;color:var(--text2);">Total spend</span><span style="font-size:12px;font-weight:600;color:var(--text);">$451</span></div>
+                  <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;color:var(--text2);">Conversions</span><span style="font-size:12px;font-weight:600;color:var(--text);">68</span></div>
+                  <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;color:var(--text2);">Cost per conversion</span><span style="font-size:12px;font-weight:600;color:var(--text);">$6.63</span></div>
+                </div>
+                <button style="margin-top:14px;width:100%;padding:8px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);font-size:12px;color:var(--text2);">Download PDF</button>
+              </div>
+            </div>
+            <div class="chart-card">
+              <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px;">Email digest schedule</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
+                <span style="font-size:13px;color:var(--text2);">Send every</span>
+                <span style="font-size:13px;font-weight:500;color:var(--text);">Monday at 8:00 AM</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;">
+                <span style="font-size:13px;color:var(--text2);">Recipients</span>
+                <span style="font-size:13px;font-weight:500;color:var(--text);">jamie@company.com</span>
+              </div>
+            </div>
+          </div>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+            <div style="text-align:center;">
+              <div style="width:48px;height:48px;border-radius:50%;background:var(--accent-dim);border:1px solid rgba(124,106,247,0.3);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 10px;">🔒</div>
+              <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">Pro feature</div>
+              <div style="font-size:12px;color:var(--text2);">Upgrade to view reports</div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /screen-digest -->
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- MOBILE SIDEBAR BACKDROP -->
+<div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleSidebar()"></div>
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="bottom-nav-mobile">
+  <div class="bnav-item active" id="bnav-dashboard" onclick="showScreen('dashboard');setActivebnav('dashboard')">
+    <div class="bnav-icon">⊞</div>
+    <div class="bnav-label">Dashboard</div>
+  </div>
+  <div class="bnav-item" id="bnav-creatives" onclick="showScreen('creatives');setActivebnav('creatives')">
+    <div class="bnav-icon">🖼</div>
+    <div class="bnav-label">Creatives</div>
+  </div>
+  <div class="bnav-item" id="bnav-alerts" onclick="openPaywall()">
+    <div class="bnav-icon">🔔</div>
+    <div class="bnav-label">Alerts</div>
+  </div>
+  <div class="bnav-item" id="bnav-digest" onclick="showScreen('digest');setActivebnav('digest')">
+    <div class="bnav-icon">📊</div>
+    <div class="bnav-label">Report</div>
+  </div>
+  <div class="bnav-item" id="bnav-settings" onclick="showScreen('settings');setActivebnav('settings')">
+    <div class="bnav-icon">⚙</div>
+    <div class="bnav-label">Settings</div>
+  </div>
+</nav>
+
+<!-- PAYWALL MODAL -->
+<div class="modal-bg" id="paywall">
+  <div class="modal">
+    <button class="modal-close" onclick="closePaywall()">✕</button>
+    <h2>Unlock Pro <span style="color:var(--accent)">→</span></h2>
+    <p class="modal-sub">Get AI-powered insights, unlimited campaigns, and competitor benchmarks.</p>
+
+    <div class="plans-grid">
+      <div class="plan">
+        <div class="plan-name">Free</div>
+        <div class="plan-price">$0 <small>/ month</small></div>
+        <div class="plan-desc">Everything to get started</div>
+        <ul class="plan-features">
+          <li><span class="feat-yes">✓</span> Core metrics dashboard</li>
+          <li><span class="feat-yes">✓</span> Up to 5 campaigns</li>
+          <li><span class="feat-yes">✓</span> 30-day data history</li>
+          <li><span class="feat-yes">✓</span> Billing management</li>
+          <li><span class="feat-no">✗</span> <span style="color:var(--text3)">Alerts &amp; notifications</span></li>
+          <li><span class="feat-no">✗</span> <span style="color:var(--text3)">AI insights</span></li>
+          <li><span class="feat-no">✗</span> <span style="color:var(--text3)">Weekly Report</span></li>
+          <li><span class="feat-no">✗</span> <span style="color:var(--text3)">Competitor benchmarks</span></li>
+        </ul>
+      </div>
+      <div class="plan featured">
+        <div class="popular-badge">Most popular</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">$19 <small>/ month</small></div>
+        <div class="plan-desc">Everything you need to grow</div>
+        <ul class="plan-features">
+          <li><span class="feat-yes">✓</span> Everything in Free</li>
+          <li><span class="feat-yes">✓</span> Unlimited campaigns</li>
+          <li><span class="feat-yes">✓</span> 1-year data history</li>
+          <li><span class="feat-yes" style="color:var(--accent2)">★</span> Alerts &amp; notifications</li>
+          <li><span class="feat-yes" style="color:var(--accent2)">★</span> AI-powered insights</li>
+          <li><span class="feat-yes" style="color:var(--accent2)">★</span> Weekly Report</li>
+          <li><span class="feat-yes" style="color:var(--accent2)">★</span> Competitor benchmarks</li>
+        </ul>
+      </div>
+    </div>
+
+    <button class="trial-btn" onclick="closePaywall()">Start 7-day free trial — no card needed</button>
+    <div class="trial-note">Trial begins when you connect your first ad account. Cancel anytime.</div>
+  </div>
+</div>
+
+<script>
+  function toggleSidebar() {
+    document.querySelector('.sidebar').classList.toggle('open');
+    document.getElementById('sidebar-backdrop').classList.toggle('open');
+  }
+  function setActivebnav(id) {
+    document.querySelectorAll('.bnav-item').forEach(b => b.classList.remove('active'));
+    const el = document.getElementById('bnav-' + id);
+    if (el) el.classList.add('active');
+    // close sidebar on mobile nav tap
+    document.querySelector('.sidebar').classList.remove('open');
+    document.getElementById('sidebar-backdrop').classList.remove('open');
+  }
+  function switchSmobTab(el) {
+    document.querySelectorAll('.smob-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+  }
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + id).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const titles = { onboarding: 'Welcome', dashboard: 'Dashboard', creatives: 'Campaign Creatives', connect: 'Connect Accounts', settings: 'Settings', alerts: 'Alerts', digest: 'Weekly Report' };
+    document.getElementById('screen-title').textContent = titles[id] || id;
+    document.querySelectorAll('.bnav-item').forEach(b => b.classList.remove('active'));
+    const bnav = document.getElementById('bnav-' + id);
+    if (bnav) bnav.classList.add('active');
+  }
+  function openPaywall() {
+    document.getElementById('paywall').classList.add('open');
+  }
+  function closePaywall() {
+    document.getElementById('paywall').classList.remove('open');
+  }
+  document.getElementById('paywall').addEventListener('click', function(e) {
+    if (e.target === this) closePaywall();
+  });
+  const rangeData = {
+    '7d': {
+      label: 'last 7 days',
+      impressions: '28.6K', impressionsDelta: '↑ 4.1%', impressionsUp: true,
+      ctr: '4.12%', ctrDelta: '↑ 0.3%', ctrUp: true,
+      spend: '$390', spendDelta: '↑ 6.8%', spendUp: true,
+      conv: '52', convDelta: '↓ 2.1%', convUp: false,
+      cpc: '$7.50', cpcDelta: '↑ 1.8%', cpcUp: false,
+      sparkLine: 'M0,55 L57,50 L114,44 L171,38 L228,30 L285,20 L342,12 L400,5',
+      sparkArea: 'M0,55 L57,50 L114,44 L171,38 L228,30 L285,20 L342,12 L400,5 L400,80 L0,80 Z',
+      bars: [
+        {name:'Summer sale', ctr:'9.1%', pct:91},
+        {name:'Brand aware.', ctr:'7.2%', pct:72},
+        {name:'Retargeting', ctr:'5.3%', pct:53},
+        {name:'Promo Q4', ctr:'2.8%', pct:28},
+        {name:'Cold reach', ctr:'1.4%', pct:14},
+      ],
+      campaigns: [
+        {name:'Summer sale', status:'active', spend:'$148', impr:'10.2K', ctr:'9.1%', pct:91},
+        {name:'Brand awareness', status:'active', spend:'$112', impr:'7.8K', ctr:'7.2%', pct:72},
+        {name:'Retargeting', status:'active', spend:'$84', impr:'5.9K', ctr:'5.3%', pct:53},
+        {name:'Promo Q4', status:'paused', spend:'$28', impr:'2.9K', ctr:'2.8%', pct:28},
+        {name:'Cold reach', status:'paused', spend:'$18', impr:'1.8K', ctr:'1.4%', pct:14},
+      ]
+    },
+    '30d': {
+      label: 'last 30 days',
+      impressions: '142.4K', impressionsDelta: '↑ 8.3%', impressionsUp: true,
+      ctr: '3.61%', ctrDelta: '↓ 0.4%', ctrUp: false,
+      spend: '$1,840', spendDelta: '↑ 12.1%', spendUp: true,
+      conv: '284', convDelta: '↑ 5.6%', convUp: true,
+      cpc: '$6.48', cpcDelta: '↓ 5.2%', cpcUp: true,
+      sparkLine: 'M0,60 L13,55 L27,50 L40,52 L53,44 L67,46 L80,40 L93,38 L107,35 L120,32 L133,30 L147,28 L160,24 L173,20 L187,18 L200,22 L213,16 L227,12 L240,18 L253,10 L267,14 L280,8 L293,12 L307,6 L320,10 L333,5 L347,8 L360,4 L373,7 L387,3 L400,5',
+      sparkArea: 'M0,60 L13,55 L27,50 L40,52 L53,44 L67,46 L80,40 L93,38 L107,35 L120,32 L133,30 L147,28 L160,24 L173,20 L187,18 L200,22 L213,16 L227,12 L240,18 L253,10 L267,14 L280,8 L293,12 L307,6 L320,10 L333,5 L347,8 L360,4 L373,7 L387,3 L400,5 L400,80 L0,80 Z',
+      bars: [
+        {name:'Summer sale', ctr:'8.2%', pct:82},
+        {name:'Brand aware.', ctr:'6.5%', pct:65},
+        {name:'Retargeting', ctr:'4.8%', pct:48},
+        {name:'Promo Q4', ctr:'3.1%', pct:31},
+        {name:'Cold reach', ctr:'1.8%', pct:18},
+      ],
+      campaigns: [
+        {name:'Summer sale', status:'active', spend:'$640', impr:'52.1K', ctr:'8.2%', pct:82},
+        {name:'Brand awareness', status:'active', spend:'$480', impr:'38.4K', ctr:'6.5%', pct:65},
+        {name:'Retargeting', status:'active', spend:'$390', impr:'29.2K', ctr:'4.8%', pct:48},
+        {name:'Promo Q4', status:'paused', spend:'$210', impr:'14.8K', ctr:'3.1%', pct:31},
+        {name:'Cold reach', status:'paused', spend:'$120', impr:'7.9K', ctr:'1.8%', pct:18},
+      ]
+    },
+    '90d': {
+      label: 'last 90 days',
+      impressions: '389.2K', impressionsDelta: '↑ 22.7%', impressionsUp: true,
+      ctr: '3.18%', ctrDelta: '↓ 1.2%', ctrUp: false,
+      spend: '$5,210', spendDelta: '↑ 31.4%', spendUp: true,
+      conv: '741', convDelta: '↑ 18.3%', convUp: true,
+      cpc: '$7.03', cpcDelta: '↓ 8.6%', cpcUp: true,
+      sparkLine: 'M0,72 L13,70 L27,68 L40,65 L53,63 L67,60 L80,58 L93,55 L107,52 L120,50 L133,52 L147,48 L160,45 L173,42 L187,44 L200,40 L213,36 L227,38 L240,32 L253,28 L267,30 L280,22 L293,18 L307,20 L320,14 L333,10 L347,12 L360,6 L373,8 L387,4 L400,5',
+      sparkArea: 'M0,72 L13,70 L27,68 L40,65 L53,63 L67,60 L80,58 L93,55 L107,52 L120,50 L133,52 L147,48 L160,45 L173,42 L187,44 L200,40 L213,36 L227,38 L240,32 L253,28 L267,30 L280,22 L293,18 L307,20 L320,14 L333,10 L347,12 L360,6 L373,8 L387,4 L400,5 L400,80 L0,80 Z',
+      bars: [
+        {name:'Summer sale', ctr:'7.4%', pct:74},
+        {name:'Brand aware.', ctr:'5.9%', pct:59},
+        {name:'Retargeting', ctr:'4.1%', pct:41},
+        {name:'Promo Q4', ctr:'3.6%', pct:36},
+        {name:'Cold reach', ctr:'2.2%', pct:22},
+      ],
+      campaigns: [
+        {name:'Summer sale', status:'active', spend:'$1,820', impr:'141K', ctr:'7.4%', pct:74},
+        {name:'Brand awareness', status:'active', spend:'$1,340', impr:'108K', ctr:'5.9%', pct:59},
+        {name:'Retargeting', status:'active', spend:'$1,080', impr:'82K', ctr:'4.1%', pct:41},
+        {name:'Promo Q4', status:'paused', spend:'$620', impr:'38K', ctr:'3.6%', pct:36},
+        {name:'Cold reach', status:'paused', spend:'$350', impr:'20K', ctr:'2.2%', pct:22},
+      ]
+    }
+  };
+
+  function setRange(el, range) {
+    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    const d = rangeData[range];
+
+    // Metrics
+    document.getElementById('m-impressions').textContent = d.impressions;
+    const impDelta = document.getElementById('m-impressions-delta');
+    impDelta.textContent = d.impressionsDelta;
+    impDelta.className = d.impressionsUp ? 'delta-up' : 'delta-down';
+
+    document.getElementById('m-ctr').textContent = d.ctr;
+    const ctrDelta = document.getElementById('m-ctr-delta');
+    ctrDelta.textContent = d.ctrDelta;
+    ctrDelta.className = d.ctrUp ? 'delta-up' : 'delta-down';
+
+    document.getElementById('m-spend').textContent = d.spend;
+    const spendDelta = document.getElementById('m-spend-delta');
+    spendDelta.textContent = d.spendDelta;
+    spendDelta.className = d.spendUp ? 'delta-up' : 'delta-down';
+
+    document.getElementById('m-conv').textContent = d.conv;
+    const convDelta = document.getElementById('m-conv-delta');
+    convDelta.textContent = d.convDelta;
+    convDelta.className = d.convUp ? 'delta-up' : 'delta-down';
+
+    document.getElementById('m-cpc').textContent = d.cpc;
+    const cpcDelta = document.getElementById('m-cpc-delta');
+    cpcDelta.textContent = d.cpcDelta;
+    cpcDelta.className = d.cpcUp ? 'delta-up' : 'delta-down';
+
+    // Sparkline
+    document.getElementById('spark-label').textContent = d.label;
+    const line = document.getElementById('spark-line');
+    const area = document.getElementById('spark-area');
+    line.setAttribute('d', d.sparkLine);
+    area.setAttribute('d', d.sparkArea);
+    line.style.animation = 'none';
+    requestAnimationFrame(() => { line.style.animation = ''; line.classList.remove('spark-path'); void line.offsetWidth; line.classList.add('spark-path'); });
+
+    // Bar chart
+    const barContainer = document.getElementById('bar-chart-container');
+    barContainer.innerHTML = d.bars.map(b => `
+      <div class="bar-row">
+        <div class="bar-name">${b.name}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${b.pct}%;background:var(--accent);transition:width 0.7s cubic-bezier(.23,1,.32,1);"></div></div>
+        <div class="bar-num">${b.ctr}</div>
+      </div>`).join('');
+
+    // Campaign table
+    const tbody = document.getElementById('campaigns-tbody');
+    tbody.innerHTML = d.campaigns.map(c => `
+      <tr>
+        <td>${c.name}</td>
+        <td><span class="status-dot status-${c.status}"></span>${c.status.charAt(0).toUpperCase()+c.status.slice(1)}</td>
+        <td>${c.spend}</td>
+        <td>${c.impr}</td>
+        <td><div class="ctr-bar"><div class="ctr-fill" style="width:${c.pct}%;"></div></div>${c.ctr}</td>
+      </tr>`).join('');
+  }
+
+  // Init with 30d on load — now handled in DOMContentLoaded above
+  function switchSettingsTab(el, panel) {
+    document.querySelectorAll('.settings-tab').forEach(t => {
+      t.style.background = 'none';
+      t.style.borderColor = 'transparent';
+      t.style.color = t.textContent.trim().startsWith('⚠') ? 'var(--red)' : 'var(--text2)';
+      t.classList.remove('active');
+    });
+    el.style.background = 'var(--accent-dim)';
+    el.style.borderColor = 'rgba(124,106,247,0.2)';
+    el.style.color = 'var(--text)';
+    el.classList.add('active');
+    document.querySelectorAll('.settings-panel').forEach(p => p.style.display = 'none');
+    document.getElementById('panel-' + panel).style.display = 'block';
+  }
+  function flipToggle(el) {
+    const isOn = el.classList.toggle('tog-on');
+    el.style.background = isOn ? 'var(--accent)' : 'var(--bg4)';
+    el.style.borderColor = isOn ? 'var(--accent)' : 'var(--border2)';
+    el.querySelector('div').style.left = isOn ? '18px' : '2px';
+  }
+  function selectPref(el, group) {
+    el.closest('div').querySelectorAll('.pref-pill').forEach(p => {
+      p.style.background = 'var(--bg4)';
+      p.style.borderColor = 'var(--border)';
+      p.style.color = 'var(--text2)';
+    });
+    el.style.background = 'var(--accent-dim)';
+    el.style.borderColor = 'rgba(124,106,247,0.35)';
+    el.style.color = 'var(--accent2)';
+  }
+  // ── LANDING → APP TRANSITION ──
+  function enterApp() {
+    const landing = document.getElementById('landing');
+    landing.classList.add('hiding');
+    setTimeout(() => { landing.style.display = 'none'; }, 520);
+    // Scroll app to top
+    window.scrollTo(0, 0);
+  }
+
+  // Landing scroll fade-ins
+  const landingObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.l-fade').forEach(el => landingObs.observe(el));
+
+  // ── CAMPAIGN CREATIVES ──
+  const ICONS = ['🛍️','✨','🎯','📣','🚀','💡','🎨','📱','🔥','⚡'];
+  let creatives = [
+    {id:1, name:'Summer Sale Banner', platform:'Google', format:'Image', ctr:8.2, spend:312, status:'active', icon:'🛍️'},
+    {id:2, name:'Brand Story Video', platform:'Meta', format:'Video', ctr:6.5, spend:240, status:'active', icon:'✨'},
+    {id:3, name:'Retarget Carousel', platform:'Meta', format:'Carousel', ctr:4.8, spend:195, status:'active', icon:'🎯'},
+    {id:4, name:'Cold Reach Static', platform:'LinkedIn', format:'Image', ctr:1.8, spend:120, status:'paused', icon:'📣'},
+  ];
+  let nextId = 5;
+
+  function getStatusBadge(ctr, status) {
+    if (status === 'paused') return `<div style="margin-top:10px;padding:3px 8px;background:var(--amber-dim);border-radius:99px;display:inline-block;font-size:10px;font-weight:600;color:var(--amber);">Paused</div>`;
+    if (ctr >= 7) return `<div style="margin-top:10px;padding:3px 8px;background:var(--green-dim);border-radius:99px;display:inline-block;font-size:10px;font-weight:600;color:var(--green);">Top performer</div>`;
+    if (ctr < 2.5) return `<div style="margin-top:10px;padding:3px 8px;background:var(--red-dim);border-radius:99px;display:inline-block;font-size:10px;font-weight:600;color:var(--red);">Low CTR</div>`;
+    return `<div style="margin-top:10px;padding:3px 8px;background:var(--accent-dim);border-radius:99px;display:inline-block;font-size:10px;font-weight:600;color:var(--accent2);">Active</div>`;
+  }
+
+  function getCTRColor(ctr) {
+    if (ctr >= 7) return 'var(--green)';
+    if (ctr < 2.5) return 'var(--red)';
+    return 'var(--text)';
+  }
+
+  function renderCreatives() {
+    const grid = document.getElementById('creatives-grid');
+    if (!grid) return;
+    grid.innerHTML = creatives.map(c => `
+      <div class="chart-card" style="padding:16px;position:relative;" id="creative-${c.id}">
+        <button onclick="deleteCreative(${c.id})" title="Delete" style="position:absolute;top:10px;right:10px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:4px;line-height:1;transition:color 0.15s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">✕</button>
+        <div style="height:100px;background:var(--bg4);border-radius:var(--r);margin-bottom:12px;display:flex;align-items:center;justify-content:center;font-size:32px;border:1px solid var(--border);">${c.icon}</div>
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;padding-right:20px;">${c.name}</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:10px;">${c.platform} · ${c.format}</div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+          <span style="font-size:11px;color:var(--text2);">CTR</span>
+          <span style="font-size:11px;font-weight:600;color:${getCTRColor(c.ctr)};">${c.ctr.toFixed(1)}%</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+          <span style="font-size:11px;color:var(--text2);">Spend</span>
+          <span style="font-size:11px;color:var(--text);">$${c.spend}</span>
+        </div>
+        ${getStatusBadge(c.ctr, c.status)}
+      </div>`).join('') + `
+      <div class="chart-card" onclick="openAddCreative()" style="padding:16px;border:1px dashed var(--border2);background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:220px;cursor:pointer;transition:border-color 0.2s,background 0.2s;" onmouseover="this.style.borderColor='var(--accent)';this.style.background='var(--accent-dim)'" onmouseout="this.style.borderColor='var(--border2)';this.style.background='transparent'">
+        <div style="width:40px;height:40px;border-radius:50%;background:var(--bg4);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:10px;color:var(--text3);">+</div>
+        <div style="font-size:13px;color:var(--text3);">Add creative</div>
+      </div>`;
+  }
+
+  function deleteCreative(id) {
+    if (!confirm('Delete this creative? This cannot be undone.')) return;
+    creatives = creatives.filter(c => c.id !== id);
+    renderCreatives();
+    showToast('Creative deleted.');
+  }
+
+  function openAddCreative() {
+    document.getElementById('add-creative-modal').classList.add('open');
+    document.getElementById('new-creative-name').value = '';
+    document.getElementById('new-creative-ctr').value = '';
+    document.getElementById('new-creative-spend').value = '';
+  }
+
+  function closeAddCreative() {
+    document.getElementById('add-creative-modal').classList.remove('open');
+  }
+
+  function submitAddCreative() {
+    const name = document.getElementById('new-creative-name').value.trim();
+    const platform = document.getElementById('new-creative-platform').value;
+    const format = document.getElementById('new-creative-format').value;
+    const ctr = parseFloat(document.getElementById('new-creative-ctr').value) || 0;
+    const spend = parseInt(document.getElementById('new-creative-spend').value) || 0;
+    const status = document.getElementById('new-creative-status').value;
+    if (!name) { document.getElementById('new-creative-name').focus(); return; }
+    const icon = ICONS[Math.floor(Math.random() * ICONS.length)];
+    creatives.push({id: nextId++, name, platform, format, ctr, spend, status, icon});
+    renderCreatives();
+    closeAddCreative();
+    showToast('Creative added!');
+  }
+
+  function enterDemoMode() { /* removed — demo mode disabled */ }
+
+  function completeConnection(platform) {
+    closeConnectModal();
+    showScreen('dashboard');
+    showToast(platform + ' connected! Syncing your data...');
+  }
+
+  function showToast(msg) {
+    const t = document.createElement('div');
+    t.textContent = msg;
+    t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1e1e2e;border:1px solid rgba(124,106,247,0.4);color:#f0f0f8;padding:10px 20px;border-radius:99px;font-size:13px;z-index:200;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.4);';
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
+
+  function dismissAlert(btn) {
+    btn.closest('[style*="border-radius:var(--r-lg)"]').remove();
+  }
+  function showNewAlertModal() { openPaywall(); }
+
+  function connectPlatform(name) {
+    const modal = document.getElementById('connect-modal');
+    document.getElementById('connect-platform-name').textContent = name;
+    modal.classList.add('open');
+    modal.dataset.platform = name;
+  }
+  function closeConnectModal() {
+    document.getElementById('connect-modal').classList.remove('open');
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    setRange(document.querySelector('.pill.active'), '30d');
+    renderCreatives();
+    document.getElementById('connect-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeConnectModal();
+    });
+    document.getElementById('add-creative-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeAddCreative();
+    });
+  });
+  function disconnectGoogle() {
+    if (confirm('Disconnect Google Ads? Your historical data will remain but syncing will stop.')) {
+      showToast('Google Ads disconnected.');
+    }
+  }
+</script>
+<!-- CONNECT PLATFORM MODAL -->
+<div class="modal-bg" id="connect-modal">
+  <div class="modal" style="width:420px;">
+    <button class="modal-close" onclick="closeConnectModal()">✕</button>
+    <div style="text-align:center;padding:8px 0 20px;">
+      <div style="font-size:36px;margin-bottom:12px;">🔗</div>
+      <h2 style="margin-bottom:6px;">Connect <span id="connect-platform-name" style="color:var(--accent);">Meta</span></h2>
+      <p style="font-size:13px;color:var(--text2);line-height:1.6;">You'll be redirected to the platform to approve read-only access. Adlytics never sees your password.</p>
+    </div>
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;margin-bottom:20px;">
+      <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:10px;">Adlytics will request access to:</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text2);">
+          <span style="color:var(--green);font-size:14px;">✓</span> Read campaign performance data
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text2);">
+          <span style="color:var(--green);font-size:14px;">✓</span> Read ad creative metrics
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text2);">
+          <span style="color:var(--green);font-size:14px;">✓</span> Read spend and billing summaries
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text3);">
+          <span style="color:var(--red);font-size:14px;">✗</span> <span style="text-decoration:line-through;">Create or modify campaigns</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text3);">
+          <span style="color:var(--red);font-size:14px;">✗</span> <span style="text-decoration:line-through;">Access billing or payment info</span>
+        </div>
+      </div>
+    </div>
+    <button class="trial-btn" onclick="completeConnection(document.getElementById('connect-modal').dataset.platform || 'Google Ads')" style="font-size:13px;">Authorize &amp; connect →</button>
+    <div class="trial-note" style="margin-top:8px;">You can revoke access from your platform settings at any time.</div>
+  </div>
+</div>
+
+</body>
+</html>

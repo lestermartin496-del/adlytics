@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#05050a"/>
+<title>Adlytics — See Every Dollar Work</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#05050a;
+  --bg2:#0a0a12;
+  --bg3:#0f0f1a;
+  --surface:rgba(255,255,255,0.04);
+  --surface2:rgba(255,255,255,0.07);
+  --border:rgba(255,255,255,0.08);
+  --border2:rgba(255,255,255,0.14);
+  --text:#f2f2fa;
+  --text2:#8888aa;
+  --text3:#44445a;
+  --accent:#7c6af7;
+  --accent2:#a99eff;
+  --accent3:#c4baff;
+  --green:#34d399;
+  --red:#f87171;
+  --amber:#fbbf24;
+  --font-display:'Syne',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);overflow-x:hidden;}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 48px;
+  background:rgba(5,5,10,0.8);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  transition:padding 0.3s;
+}
+.nav-logo{font-family:var(--font-display);font-size:20px;font-weight:800;letter-spacing:-0.5px;display:flex;align-items:center;gap:8px;}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(124,106,247,0.6);}
+.nav-cta{display:flex;align-items:center;gap:12px;}
+.btn-ghost{padding:8px 20px;border:1px solid var(--border2);border-radius:99px;font-size:13px;font-weight:500;color:var(--text2);background:none;cursor:pointer;font-family:var(--font-body);transition:all 0.15s;text-decoration:none;}
+.btn-ghost:hover{color:var(--text);border-color:var(--border2);}
+.btn-primary{padding:9px 22px;background:var(--accent);border:none;border-radius:99px;font-size:13px;font-weight:600;color:#fff;cursor:pointer;font-family:var(--font-body);transition:opacity 0.15s;text-decoration:none;}
+.btn-primary:hover{opacity:0.85;}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:120px 24px 80px;position:relative;overflow:hidden;
+}
+.hero-glow{
+  position:absolute;top:10%;left:50%;transform:translateX(-50%);
+  width:700px;height:700px;border-radius:50%;
+  background:radial-gradient(circle,rgba(124,106,247,0.18) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-glow2{
+  position:absolute;bottom:-10%;right:-10%;
+  width:500px;height:500px;border-radius:50%;
+  background:radial-gradient(circle,rgba(52,211,153,0.08) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(124,106,247,0.12);border:1px solid rgba(124,106,247,0.25);
+  padding:5px 14px;border-radius:99px;
+  font-size:12px;font-weight:600;color:var(--accent2);letter-spacing:0.05em;
+  margin-bottom:28px;
+}
+.hero-eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.hero-h1{
+  font-family:var(--font-display);
+  font-size:clamp(48px,8vw,96px);
+  font-weight:800;line-height:0.95;
+  letter-spacing:-3px;
+  margin-bottom:28px;
+  max-width:900px;
+}
+.hero-h1 span{
+  background:linear-gradient(135deg,var(--accent3) 0%,var(--accent) 50%,#4a3fc9 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-sub{
+  font-size:clamp(16px,2.5vw,20px);color:var(--text2);line-height:1.65;
+  max-width:560px;margin:0 auto 44px;font-weight:300;
+}
+.hero-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:60px;}
+.btn-hero{
+  padding:14px 32px;background:var(--accent);border:none;border-radius:99px;
+  font-size:15px;font-weight:700;color:#fff;cursor:pointer;font-family:var(--font-display);
+  transition:all 0.2s;box-shadow:0 0 40px rgba(124,106,247,0.35);
+  text-decoration:none;display:inline-block;
+}
+.btn-hero:hover{transform:translateY(-2px);box-shadow:0 0 60px rgba(124,106,247,0.5);}
+.btn-hero-ghost{
+  padding:14px 32px;background:none;border:1px solid var(--border2);border-radius:99px;
+  font-size:15px;font-weight:500;color:var(--text2);cursor:pointer;font-family:var(--font-body);
+  transition:all 0.2s;text-decoration:none;display:inline-block;
+}
+.btn-hero-ghost:hover{color:var(--text);border-color:rgba(255,255,255,0.25);}
+.hero-note{font-size:12px;color:var(--text3);}
+
+/* Dashboard preview mockup */
+.hero-preview{
+  width:100%;max-width:900px;margin:0 auto;
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:20px;overflow:hidden;
+  box-shadow:0 40px 120px rgba(0,0,0,0.6),0 0 0 1px rgba(124,106,247,0.1);
+  position:relative;
+}
+.preview-bar{
+  height:40px;background:var(--bg3);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 16px;gap:8px;
+}
+.preview-dot{width:10px;height:10px;border-radius:50%;}
+.preview-content{padding:20px;display:grid;grid-template-columns:repeat(5,1fr);gap:0;background:var(--surface);}
+.preview-stat{padding:16px;border-right:1px solid var(--border);}
+.preview-stat:last-child{border-right:none;border-left:2px solid var(--accent);}
+.ps-label{font-size:9px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
+.ps-val{font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--text);margin-bottom:3px;}
+.ps-delta{font-size:10px;font-weight:600;}
+.ps-up{color:var(--green);}
+.ps-dn{color:var(--red);}
+.preview-chart{padding:16px 20px 20px;display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.preview-chart-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px;}
+.pcc-label{font-size:10px;font-weight:600;color:var(--text3);margin-bottom:10px;}
+.pcc-bars{display:flex;flex-direction:column;gap:6px;}
+.pcc-bar-row{display:flex;align-items:center;gap:8px;}
+.pcc-bar-name{font-size:10px;color:var(--text2);width:72px;flex-shrink:0;}
+.pcc-bar-track{flex:1;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;}
+.pcc-bar-fill{height:100%;border-radius:3px;background:var(--accent);}
+.pcc-bar-num{font-size:10px;color:var(--text3);width:28px;text-align:right;}
+/* sparkline in preview */
+.preview-spark{width:100%;height:50px;}
+
+/* ── MARQUEE LOGOS ── */
+.logos-section{padding:40px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden;position:relative;}
+.logos-label{text-align:center;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:24px;}
+.marquee-track{display:flex;gap:60px;animation:marquee 20s linear infinite;width:max-content;}
+@keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+.marquee-item{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--text3);white-space:nowrap;letter-spacing:-0.5px;}
+
+/* ── SECTIONS ── */
+section{padding:100px 48px;}
+.section-eyebrow{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent2);margin-bottom:14px;}
+.section-h2{font-family:var(--font-display);font-size:clamp(32px,5vw,52px);font-weight:800;letter-spacing:-1.5px;line-height:1.05;margin-bottom:18px;}
+.section-sub{font-size:17px;color:var(--text2);line-height:1.65;max-width:520px;font-weight:300;}
+
+/* ── FEATURES GRID ── */
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:60px;}
+.feature-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:20px;padding:28px;
+  transition:border-color 0.2s,background 0.2s;position:relative;overflow:hidden;
+}
+.feature-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(124,106,247,0.4),transparent);
+  opacity:0;transition:opacity 0.3s;
+}
+.feature-card:hover{border-color:rgba(124,106,247,0.25);background:rgba(124,106,247,0.05);}
+.feature-card:hover::before{opacity:1;}
+.feature-icon{font-size:28px;margin-bottom:16px;}
+.feature-title{font-family:var(--font-display);font-size:17px;font-weight:700;margin-bottom:8px;}
+.feature-desc{font-size:13px;color:var(--text2);line-height:1.65;}
+.feature-card.feature-pro{border-color:rgba(124,106,247,0.2);background:rgba(124,106,247,0.06);}
+.pro-chip{display:inline-block;background:var(--accent);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:0.04em;margin-left:8px;vertical-align:middle;}
+
+/* ── BENTO ── */
+.bento{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:auto auto;gap:16px;margin-top:60px;}
+.bento-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:20px;padding:28px;overflow:hidden;position:relative;
+}
+.bento-card.bento-wide{grid-column:span 2;}
+.bento-card.bento-tall{grid-row:span 2;}
+.bento-label{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;}
+.bento-title{font-family:var(--font-display);font-size:20px;font-weight:700;margin-bottom:8px;line-height:1.2;}
+.bento-desc{font-size:13px;color:var(--text2);line-height:1.6;}
+.bento-number{font-family:var(--font-display);font-size:56px;font-weight:800;line-height:1;margin:12px 0 4px;background:linear-gradient(135deg,var(--accent3),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.bento-sub{font-size:12px;color:var(--text3);}
+
+/* Simulated platform logos in bento */
+.platform-logos{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
+.plat{
+  padding:6px 14px;background:rgba(255,255,255,0.06);border:1px solid var(--border);
+  border-radius:99px;font-size:11px;font-weight:600;color:var(--text2);
+}
+
+/* ── TESTIMONIALS ── */
+.testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:60px;}
+.testimonial{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:20px;padding:28px;position:relative;
+}
+.testimonial::before{content:'\201C';font-family:Georgia,serif;font-size:60px;color:var(--accent);opacity:0.2;position:absolute;top:12px;left:20px;line-height:1;}
+.test-text{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:20px;position:relative;z-index:1;font-style:italic;}
+.test-author{display:flex;align-items:center;gap:10px;}
+.test-avatar{width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
+.test-name{font-size:13px;font-weight:600;color:var(--text);}
+.test-role{font-size:11px;color:var(--text3);}
+.stars{display:flex;gap:2px;margin-bottom:12px;}
+.star{color:var(--amber);font-size:12px;}
+
+/* ── PRICING ── */
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:700px;margin:60px auto 0;}
+.pricing-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:24px;padding:32px;
+}
+.pricing-card.pricing-featured{
+  background:linear-gradient(145deg,rgba(124,106,247,0.15),rgba(124,106,247,0.05));
+  border-color:rgba(124,106,247,0.3);position:relative;
+}
+.pricing-badge{
+  position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  background:var(--accent);color:#fff;font-size:10px;font-weight:700;
+  padding:3px 14px;border-radius:99px;white-space:nowrap;
+}
+.pricing-name{font-family:var(--font-display);font-size:16px;font-weight:700;margin-bottom:4px;}
+.pricing-price{font-family:var(--font-display);font-size:42px;font-weight:800;line-height:1;margin:12px 0 4px;}
+.pricing-price span{font-size:14px;font-weight:400;color:var(--text2);}
+.pricing-desc{font-size:13px;color:var(--text2);margin-bottom:24px;}
+.pricing-features{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:28px;}
+.pricing-features li{font-size:13px;color:var(--text2);display:flex;align-items:center;gap:8px;}
+.pf-yes{color:var(--green);font-size:14px;}
+.pf-pro{color:var(--accent2);font-size:14px;}
+.pf-no{color:var(--text3);font-size:14px;}
+.btn-pricing{
+  width:100%;padding:12px;border-radius:12px;font-size:13px;font-weight:700;
+  cursor:pointer;font-family:var(--font-display);transition:opacity 0.15s;border:none;
+}
+.btn-pricing.primary{background:var(--accent);color:#fff;}
+.btn-pricing.ghost{background:none;border:1px solid var(--border2);color:var(--text2);}
+.btn-pricing:hover{opacity:0.85;}
+
+/* ── CTA FINAL ── */
+.cta-section{
+  padding:120px 48px;text-align:center;position:relative;overflow:hidden;
+}
+.cta-glow{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:800px;height:400px;
+  background:radial-gradient(ellipse,rgba(124,106,247,0.15) 0%,transparent 70%);
+  pointer-events:none;
+}
+.cta-h2{font-family:var(--font-display);font-size:clamp(36px,6vw,72px);font-weight:800;letter-spacing:-2px;line-height:1.05;margin-bottom:20px;}
+.cta-sub{font-size:17px;color:var(--text2);margin-bottom:40px;font-weight:300;}
+
+/* ── FOOTER ── */
+footer{
+  border-top:1px solid var(--border);padding:40px 48px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;
+}
+.footer-logo{font-family:var(--font-display);font-size:16px;font-weight:800;display:flex;align-items:center;gap:6px;}
+.footer-links{display:flex;gap:24px;}
+.footer-links a{font-size:13px;color:var(--text3);text-decoration:none;transition:color 0.15s;}
+.footer-links a:hover{color:var(--text2);}
+.footer-copy{font-size:12px;color:var(--text3);}
+
+/* ── SCROLL ANIMATIONS ── */
+.fade-up{opacity:0;transform:translateY(30px);transition:opacity 0.7s ease,transform 0.7s ease;}
+.fade-up.visible{opacity:1;transform:translateY(0);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  section{padding:72px 24px;}
+  .features-grid{grid-template-columns:1fr 1fr;}
+  .bento{grid-template-columns:1fr 1fr;}
+  .bento-card.bento-wide{grid-column:span 2;}
+  .bento-card.bento-tall{grid-row:auto;}
+  .testimonials{grid-template-columns:1fr;}
+  .pricing-grid{grid-template-columns:1fr;max-width:400px;}
+  .preview-content{grid-template-columns:repeat(3,1fr);}
+  .preview-chart{grid-template-columns:1fr;}
+  footer{flex-direction:column;align-items:flex-start;}
+}
+@media(max-width:600px){
+  .hero{padding:100px 20px 60px;}
+  .features-grid{grid-template-columns:1fr;}
+  .bento{grid-template-columns:1fr;}
+  .bento-card.bento-wide{grid-column:span 1;}
+  .cta-section{padding:80px 20px;}
+  .hero-actions{flex-direction:column;width:100%;}
+  .btn-hero,.btn-hero-ghost{width:100%;text-align:center;}
+  .preview-content{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><div class="nav-dot"></div>Adlytics</div>
+  <div class="nav-cta">
+    <a href="adlytics-mvp.html" class="btn-ghost">Sign in</a>
+    <a href="adlytics-mvp.html" class="btn-primary">Get started free</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div class="hero-eyebrow"><div class="hero-eyebrow-dot"></div>Now supporting Google, Meta, TikTok & LinkedIn</div>
+  <h1 class="hero-h1">Stop guessing.<br><span>Start winning.</span></h1>
+  <p class="hero-sub">Adlytics pulls your ad data from every platform into one dashboard — so you always know what's working, what's wasting money, and what to do next.</p>
+  <div class="hero-actions">
+    <a href="adlytics-mvp.html" class="btn-hero">Connect your first account →</a>
+    <a href="#how-it-works" class="btn-hero-ghost">See how it works</a>
+  </div>
+  <p class="hero-note">7-day free trial · No credit card · Cancel anytime</p>
+
+  <!-- Dashboard preview -->
+  <div class="hero-preview fade-up" style="margin-top:60px;">
+    <div class="preview-bar">
+      <div class="preview-dot" style="background:#f87171;"></div>
+      <div class="preview-dot" style="background:#fbbf24;"></div>
+      <div class="preview-dot" style="background:#34d399;"></div>
+      <div style="flex:1;text-align:center;font-size:11px;color:rgba(255,255,255,0.2);font-family:'DM Sans',sans-serif;">adlytics.app/dashboard</div>
+    </div>
+    <div class="preview-content">
+      <div class="preview-stat"><div class="ps-label">Impressions</div><div class="ps-val">142.4K</div><div class="ps-delta ps-up">↑ 8.3%</div></div>
+      <div class="preview-stat"><div class="ps-label">CTR</div><div class="ps-val">3.61%</div><div class="ps-delta ps-dn">↓ 0.4%</div></div>
+      <div class="preview-stat"><div class="ps-label">Total spend</div><div class="ps-val">$1,840</div><div class="ps-delta ps-up">↑ 12.1%</div></div>
+      <div class="preview-stat"><div class="ps-label">Conversions</div><div class="ps-val">284</div><div class="ps-delta ps-up">↑ 5.6%</div></div>
+      <div class="preview-stat"><div class="ps-label">Cost / conv.</div><div class="ps-val">$6.48</div><div class="ps-delta ps-up">↓ 5.2%</div></div>
+    </div>
+    <div class="preview-chart">
+      <div class="preview-chart-card">
+        <div class="pcc-label">Clicks over time · last 30 days</div>
+        <svg class="preview-spark" viewBox="0 0 400 50" preserveAspectRatio="none">
+          <defs><linearGradient id="pg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7c6af7" stop-opacity="0.3"/><stop offset="100%" stop-color="#7c6af7" stop-opacity="0"/></linearGradient></defs>
+          <path d="M0,40 L40,36 L80,30 L120,24 L160,20 L200,16 L240,12 L280,8 L320,6 L360,4 L400,2 L400,50 L0,50Z" fill="url(#pg)"/>
+          <path d="M0,40 L40,36 L80,30 L120,24 L160,20 L200,16 L240,12 L280,8 L320,6 L360,4 L400,2" fill="none" stroke="#7c6af7" stroke-width="2"/>
+        </svg>
+      </div>
+      <div class="preview-chart-card">
+        <div class="pcc-label">Top campaigns by CTR</div>
+        <div class="pcc-bars">
+          <div class="pcc-bar-row"><div class="pcc-bar-name">Summer sale</div><div class="pcc-bar-track"><div class="pcc-bar-fill" style="width:82%"></div></div><div class="pcc-bar-num">8.2%</div></div>
+          <div class="pcc-bar-row"><div class="pcc-bar-name">Brand aware.</div><div class="pcc-bar-track"><div class="pcc-bar-fill" style="width:65%"></div></div><div class="pcc-bar-num">6.5%</div></div>
+          <div class="pcc-bar-row"><div class="pcc-bar-name">Retargeting</div><div class="pcc-bar-track"><div class="pcc-bar-fill" style="width:48%"></div></div><div class="pcc-bar-num">4.8%</div></div>
+          <div class="pcc-bar-row"><div class="pcc-bar-name">Promo Q4</div><div class="pcc-bar-track"><div class="pcc-bar-fill" style="width:31%"></div></div><div class="pcc-bar-num">3.1%</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="logos-section">
+  <p class="logos-label">Works with all your ad platforms</p>
+  <div style="overflow:hidden;">
+    <div class="marquee-track">
+      <div class="marquee-item">Google Ads</div>
+      <div class="marquee-item">·</div>
+      <div class="marquee-item">Meta Ads</div>
+      <div class="marquee-item">·</div>
+      <div class="marquee-item">TikTok Ads</div>
+      <div class="marquee-item">·</div>
+      <div class="marquee-item">LinkedIn Ads</div>
+      <div class="marquee-item">·</div>
+      <div class="marquee-item">Google Analytics</div>
+      <div class="marquee-item">·</div>
+      <div class="marquee-item">Google Ads</div>
+      <div class="marquee-item">·</div>
+      <div class="marquee-item">Meta Ads</div>
+      <div class="marquee-item">·</div>
+      <div class="marquee-item">TikTok Ads</div>
+      <div class="marquee-item">·</div>
+      <div class="marquee-item">LinkedIn Ads</div>
+      <div class="marquee-item">·</div>
+      <div class="marquee-item">Google Analytics</div>
+      <div class="marquee-item">·</div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="fade-up">
+    <div class="section-eyebrow">Features</div>
+    <h2 class="section-h2">Everything you need.<br>Nothing you don't.</h2>
+    <p class="section-sub">Built for marketers who are tired of switching between five tabs just to answer one question.</p>
+  </div>
+  <div class="features-grid fade-up">
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <div class="feature-title">Real-time sync</div>
+      <div class="feature-desc">Your numbers update automatically every hour. No manual exports, no copy-pasting from platform dashboards.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <div class="feature-title">Cross-platform view</div>
+      <div class="feature-desc">Google, Meta, TikTok, LinkedIn — all in one place. Finally compare performance across platforms without a spreadsheet.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎯</div>
+      <div class="feature-title">Campaign Creatives</div>
+      <div class="feature-desc">Track every individual ad asset — banners, videos, carousels. See which creative drives results and which to kill.</div>
+    </div>
+    <div class="feature-card feature-pro">
+      <div class="feature-icon">🔍</div>
+      <div class="feature-title">AI Insights <span class="pro-chip">PRO</span></div>
+      <div class="feature-desc">Get smart recommendations: which campaigns to scale, which to pause, and the best times to run your ads.</div>
+    </div>
+    <div class="feature-card feature-pro">
+      <div class="feature-icon">🔔</div>
+      <div class="feature-title">Alerts <span class="pro-chip">PRO</span></div>
+      <div class="feature-desc">Get notified the moment a campaign overspends, CTR drops, or a sync fails — before it costs you money.</div>
+    </div>
+    <div class="feature-card feature-pro">
+      <div class="feature-icon">📩</div>
+      <div class="feature-title">Weekly Report <span class="pro-chip">PRO</span></div>
+      <div class="feature-desc">Auto-generated Monday morning email with your week's performance, trends, and a downloadable PDF for your team.</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS BENTO -->
+<section id="how-it-works" style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="fade-up">
+    <div class="section-eyebrow">How it works</div>
+    <h2 class="section-h2">Connected in 60 seconds.<br>Insights in minutes.</h2>
+  </div>
+  <div class="bento fade-up">
+    <div class="bento-card bento-wide">
+      <div class="bento-label">Step 1</div>
+      <div class="bento-title">Connect your ad accounts</div>
+      <div class="bento-desc">Click connect, approve read-only access on your platform, and you're done. Adlytics never touches your campaigns.</div>
+      <div class="platform-logos">
+        <div class="plat">🔵 Google Ads</div>
+        <div class="plat">📘 Meta</div>
+        <div class="plat">🎵 TikTok</div>
+        <div class="plat">💼 LinkedIn</div>
+      </div>
+    </div>
+    <div class="bento-card">
+      <div class="bento-label">We pull the data</div>
+      <div class="bento-title">Automatic syncing every hour</div>
+      <div class="bento-desc">No manual exports. Your dashboard stays fresh while you focus on running campaigns.</div>
+      <div class="bento-number">1hr</div>
+      <div class="bento-sub">average sync interval</div>
+    </div>
+    <div class="bento-card">
+      <div class="bento-label">Your dashboard</div>
+      <div class="bento-title">All your metrics in one place</div>
+      <div class="bento-desc">CTR, spend, conversions, cost-per-conversion — across every platform, every campaign.</div>
+      <div class="bento-number">5</div>
+      <div class="bento-sub">key metrics tracked</div>
+    </div>
+    <div class="bento-card bento-wide">
+      <div class="bento-label">Step 3</div>
+      <div class="bento-title">Make smarter decisions faster</div>
+      <div class="bento-desc">See which campaigns are working, which creatives are underperforming, and get AI-powered recommendations on what to do next — all without opening a single platform dashboard.</div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section>
+  <div class="fade-up">
+    <div class="section-eyebrow">Testimonials</div>
+    <h2 class="section-h2">Marketers love it.</h2>
+  </div>
+  <div class="testimonials fade-up">
+    <div class="testimonial">
+      <div class="stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
+      <div class="test-text">I used to spend Monday mornings pulling reports from Google, Meta, and TikTok separately. Now I open Adlytics and I'm done in 2 minutes.</div>
+      <div class="test-author">
+        <div class="test-avatar" style="background:#534AB7;">SL</div>
+        <div><div class="test-name">Sarah L.</div><div class="test-role">Performance Marketer, Shopify brand</div></div>
+      </div>
+    </div>
+    <div class="testimonial">
+      <div class="stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
+      <div class="test-text">The Weekly Report alone is worth the subscription. My clients get a professional PDF every Monday without me lifting a finger.</div>
+      <div class="test-author">
+        <div class="test-avatar" style="background:#0f6e56;">MR</div>
+        <div><div class="test-name">Marcus R.</div><div class="test-role">Founder, Digital Agency</div></div>
+      </div>
+    </div>
+    <div class="testimonial">
+      <div class="stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
+      <div class="test-text">The spend alert saved me $400 in a single week. One of our campaigns had a bug and was burning budget — Adlytics caught it before I even noticed.</div>
+      <div class="test-author">
+        <div class="test-avatar" style="background:#993C1D;">JP</div>
+        <div><div class="test-name">Jamie P.</div><div class="test-role">Growth Lead, SaaS startup</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);text-align:center;">
+  <div class="fade-up">
+    <div class="section-eyebrow">Pricing</div>
+    <h2 class="section-h2">Simple, honest pricing.</h2>
+    <p class="section-sub" style="margin:0 auto;">Start free. Upgrade when you need more power. No surprises.</p>
+  </div>
+  <div class="pricing-grid fade-up">
+    <div class="pricing-card">
+      <div class="pricing-name">Free</div>
+      <div class="pricing-price">$0 <span>/ month</span></div>
+      <div class="pricing-desc">Everything to get started</div>
+      <ul class="pricing-features">
+        <li><span class="pf-yes">✓</span> Live dashboard</li>
+        <li><span class="pf-yes">✓</span> Up to 5 campaigns</li>
+        <li><span class="pf-yes">✓</span> 30-day data history</li>
+        <li><span class="pf-yes">✓</span> Campaign Creatives</li>
+        <li><span class="pf-yes">✓</span> Billing management</li>
+        <li><span class="pf-no">✗</span> <span style="color:var(--text3)">Alerts</span></li>
+        <li><span class="pf-no">✗</span> <span style="color:var(--text3)">AI Insights</span></li>
+        <li><span class="pf-no">✗</span> <span style="color:var(--text3)">Weekly Report</span></li>
+      </ul>
+      <a href="adlytics-mvp.html" class="btn-pricing ghost" style="display:block;text-align:center;text-decoration:none;">Get started free</a>
+    </div>
+    <div class="pricing-card pricing-featured">
+      <div class="pricing-badge">Most popular</div>
+      <div class="pricing-name">Pro</div>
+      <div class="pricing-price">$19 <span>/ month</span></div>
+      <div class="pricing-desc">Everything you need to grow</div>
+      <ul class="pricing-features">
+        <li><span class="pf-yes">✓</span> Everything in Free</li>
+        <li><span class="pf-yes">✓</span> Unlimited campaigns</li>
+        <li><span class="pf-yes">✓</span> 1-year data history</li>
+        <li><span class="pf-pro">★</span> Real-time Alerts</li>
+        <li><span class="pf-pro">★</span> AI-powered Insights</li>
+        <li><span class="pf-pro">★</span> Weekly Report + PDF</li>
+        <li><span class="pf-pro">★</span> Competitor benchmarks</li>
+      </ul>
+      <a href="adlytics-mvp.html" class="btn-pricing primary" style="display:block;text-align:center;text-decoration:none;">Start 7-day free trial</a>
+    </div>
+  </div>
+  <p style="margin-top:20px;font-size:12px;color:var(--text3);">Trial starts when you connect your first ad account. Cancel anytime.</p>
+</section>
+
+<!-- FINAL CTA -->
+<section class="cta-section fade-up">
+  <div class="cta-glow"></div>
+  <h2 class="cta-h2">Your ads are running.<br>Are you watching?</h2>
+  <p class="cta-sub">Connect in 60 seconds. No credit card. Cancel whenever.</p>
+  <a href="adlytics-mvp.html" class="btn-hero">Get started free →</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo"><div class="nav-dot"></div>Adlytics</div>
+  <div class="footer-links">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">Contact</a>
+    <a href="#pricing">Pricing</a>
+  </div>
+  <div class="footer-copy">© 2025 Adlytics. All rights reserved.</div>
+</footer>
+
+<script>
+// Scroll fade-in
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
